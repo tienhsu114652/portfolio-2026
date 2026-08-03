@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word 快捷鍵神助攻 - 管理大師</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+            scroll-behavior: smooth;
+        }
+        /* 頁首背景圖設定 */
+        .hero-bg {
+            background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.8)), url('background.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .card-edit-mode {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #2b579a; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // --- 快捷鍵數據庫 (CSV 原封不動) ---
+        const INITIAL_DB = [
+            { id: 1, category: "基礎編輯", action: "全選", keywords: ["all"], win: "Ctrl + A", mac: "⌘ + A" },
+            { id: 2, category: "基礎編輯", action: "字型加粗", keywords: ["bold"], win: "Ctrl + B", mac: "⌘ + B" },
+            { id: 3, category: "基礎編輯", action: "複製", keywords: ["copy"], win: "Ctrl + C", mac: "⌘ + C" },
+            { id: 4, category: "基礎編輯", action: "貼上", keywords: ["paste"], win: "Ctrl + V", mac: "⌘ + V" },
+            { id: 5, category: "基礎編輯", action: "剪下", keywords: ["cut"], win: "Ctrl + X", mac: "⌘ + X" },
+            { id: 6, category: "基礎編輯", action: "復原上一步", keywords: ["undo"], win: "Ctrl + Z", mac: "⌘ + Z" },
+            { id: 7, category: "基礎編輯", action: "重做上一步", keywords: ["redo"], win: "Ctrl + Y", mac: "⌘ + Y" },
+            { id: 8, category: "基礎編輯", action: "尋找", keywords: ["find"], win: "Ctrl + F", mac: "⌘ + F" },
+            { id: 9, category: "基礎編輯", action: "取代", keywords: ["replace"], win: "Ctrl + H", mac: "Ctrl + H" },
+            { id: 10, category: "基礎編輯", action: "儲存", keywords: ["save"], win: "Ctrl + S", mac: "⌘ + S" },
+            { id: 11, category: "基礎編輯", action: "儲存 (Shift+F12)", keywords: ["save"], win: "Shift + F12", mac: "Shift + F12" },
+            { id: 12, category: "格式設定", action: "更改格式/字體對話框", keywords: ["font"], win: "Ctrl + D", mac: "⌘ + D" },
+            { id: 13, category: "格式設定", action: "置中對齊", keywords: ["center"], win: "Ctrl + E", mac: "⌘ + E" },
+            { id: 14, category: "格式設定", action: "兩端對齊", keywords: ["justify"], win: "Ctrl + J", mac: "⌘ + J" },
+            { id: 15, category: "格式設定", action: "左對齊", keywords: ["left"], win: "Ctrl + L", mac: "⌘ + L" },
+            { id: 16, category: "格式設定", action: "右對齊", keywords: ["right"], win: "Ctrl + R", mac: "⌘ + R" },
+            { id: 17, category: "格式設定", action: "刪除格式 (Ctrl+Q)", keywords: ["clear"], win: "Ctrl + Q", mac: "⌃ + Q" },
+            { id: 18, category: "格式設定", action: "刪除選定文字格式", keywords: ["clear"], win: "Ctrl + Shift + N", mac: "⌘ + Shift + N" },
+            { id: 19, category: "格式設定", action: "新增底線", keywords: ["underline"], win: "Ctrl + U", mac: "⌘ + U" },
+            { id: 20, category: "格式設定", action: "字型傾斜", keywords: ["italic"], win: "Ctrl + I", mac: "⌘ + I" },
+            { id: 21, category: "格式設定", action: "單倍行高", keywords: ["spacing"], win: "Ctrl + 1", mac: "⌘ + 1" },
+            { id: 22, category: "格式設定", action: "雙倍行高", keywords: ["spacing"], win: "Ctrl + 2", mac: "⌘ + 2" },
+            { id: 23, category: "格式設定", action: "複製格式", keywords: ["format"], win: "Ctrl + Shift + C", mac: "⌘ + Shift + C" },
+            { id: 24, category: "格式設定", action: "貼上格式", keywords: ["format"], win: "Ctrl + Shift + V", mac: "⌘ + Shift + V" },
+            { id: 25, category: "格式設定", action: "改變字型", keywords: ["font"], win: "Ctrl + Shift + F", mac: "⌘ + Shift + F" },
+            { id: 26, category: "格式設定", action: "增大字號", keywords: ["bigger"], win: "Ctrl + Shift + >", mac: "⌘ + Shift + >" },
+            { id: 27, category: "格式設定", action: "減小字號", keywords: ["smaller"], win: "Ctrl + Shift + <", mac: "⌘ + Shift + <" },
+            { id: 28, category: "導航選取", action: "定位", keywords: ["goto"], win: "Ctrl + G", mac: "⌥ + ⌘ + G" },
+            { id: 29, category: "導航選取", action: "左縮排", keywords: ["indent"], win: "Ctrl + M", mac: "⌘ + M" },
+            { id: 30, category: "導航選取", action: "建立表格 / 懸掛縮排", keywords: ["table"], win: "Ctrl + T", mac: "⌘ + T" },
+            { id: 31, category: "導航選取", action: "當前選擴進首行", keywords: ["expand"], win: "Shift + Home", mac: "Shift + Home" },
+            { id: 32, category: "導航選取", action: "當前選擴進至尾行", keywords: ["expand"], win: "Shift + End", mac: "Shift + End" },
+            { id: 33, category: "導航選取", action: "減少縮排量", keywords: ["unindent"], win: "Shift + Tab", mac: "Shift + Tab" },
+            { id: 34, category: "導航選取", action: "游標移至文件首", keywords: ["top"], win: "Ctrl + Home", mac: "⌘ + ↑" },
+            { id: 35, category: "導航選取", action: "游標移至文件尾", keywords: ["bottom"], win: "Ctrl + End", mac: "⌘ + ↓" },
+            { id: 36, category: "導航選取", action: "增加縮排量", keywords: ["indent"], win: "Tab", mac: "Tab" },
+            { id: 37, category: "導航選取", action: "從當前擴選至文件首", keywords: ["expand"], win: "Ctrl + Shift + Home", mac: "⌘ + Shift + ↑" },
+            { id: 38, category: "導航選取", action: "從當前擴選至文件尾", keywords: ["expand"], win: "Ctrl + Shift + End", mac: "⌘ + Shift + ↓" },
+            { id: 39, category: "導航選取", action: "上移所選段落", keywords: ["move up"], win: "Alt + Shift + ↑", mac: "⌥ + Shift + ↑" },
+            { id: 40, category: "導航選取", action: "下移所選段落", keywords: ["move down"], win: "Alt + Shift + ↓", mac: "⌥ + Shift + ↓" },
+            { id: 41, category: "文件視窗", action: "新建文件", keywords: ["new"], win: "Ctrl + N", mac: "⌘ + N" },
+            { id: 42, category: "文件視窗", action: "開啟文件", keywords: ["open"], win: "Ctrl + O", mac: "⌘ + O" },
+            { id: 43, category: "文件視窗", action: "列印 (P)", keywords: ["print"], win: "Ctrl + P", mac: "⌘ + P" },
+            { id: 44, category: "文件視窗", action: "列印 (F2)", keywords: ["print"], win: "Ctrl + F2", mac: "⌘ + P" },
+            { id: 45, category: "文件視窗", action: "關閉文件", keywords: ["close"], win: "Ctrl + W", mac: "⌘ + W" },
+            { id: 46, category: "文件視窗", action: "關閉 (F4)", keywords: ["close"], win: "Ctrl + F4", mac: "⌘ + W" },
+            { id: 47, category: "文件視窗", action: "隱藏/顯示功能區", keywords: ["ribbon"], win: "Ctrl + F1", mac: "⌘ + ⌥ + R" },
+            { id: 48, category: "文件視窗", action: "多文件切換", keywords: ["switch"], win: "Ctrl + F6", mac: "⌘ + ` " },
+            { id: 49, category: "文件視窗", action: "多文件切換 (Alt)", keywords: ["switch"], win: "Alt + F6", mac: "⌘ + ` " },
+            { id: 50, category: "文件視窗", action: "開啟 (F12)", keywords: ["open"], win: "Ctrl + F12", mac: "⌘ + O" },
+            { id: 51, category: "文件視窗", action: "插入分頁符", keywords: ["page break"], win: "Ctrl + Enter", mac: "⌘ + Enter" },
+            { id: 52, category: "進階功能", action: "超連結", keywords: ["link"], win: "Ctrl + K", mac: "⌘ + K" },
+            { id: 53, category: "進階功能", action: "插入數學公式", keywords: ["math"], win: "Alt + =", mac: "⌃ + =" },
+            { id: 54, category: "進階功能", action: "軟換行 (Shift+Enter)", keywords: ["newline"], win: "Shift + Enter", mac: "Shift + Enter" },
+            { id: 55, category: "進階功能", action: "切換公式結果", keywords: ["field"], win: "Shift + F9", mac: "⌥ + F9" },
+            { id: 56, category: "進階功能", action: "取消連結", keywords: ["unlink"], win: "Ctrl + Shift + F9", mac: "⌘ + Shift + F9" },
+            { id: 57, category: "進階功能", action: "新建批註", keywords: ["comment"], win: "Ctrl + Alt + M", mac: "⌘ + ⌥ + A" },
+            { id: 58, category: "進階功能", action: "切換到大綱模式", keywords: ["outline"], win: "Ctrl + Alt + O", mac: "⌘ + ⌥ + O" },
+            { id: 59, category: "進階功能", action: "切換到頁面模式", keywords: ["print"], win: "Ctrl + Alt + P", mac: "⌘ + ⌥ + P" },
+            { id: 60, category: "系統功能", action: "切換輸入法", keywords: ["ime"], win: "Ctrl + Shift", mac: "⌃ + Space" },
+            { id: 61, category: "系統功能", action: "永久刪除", keywords: ["delete"], win: "Shift + Delete", mac: "⌥ + ⌘ + Delete" },
+            { id: 62, category: "系統功能", action: "顯示桌面", keywords: ["desktop"], win: "Win + D", mac: "F11" },
+            { id: 63, category: "系統功能", action: "開啟檔案總管", keywords: ["explorer"], win: "Win + E", mac: "⌘ + ⌥ + L" },
+            { id: 64, category: "系統功能", action: "執行介面", keywords: ["run"], win: "Win + R", mac: "⌘ + Space" },
+            { id: 65, category: "系統功能", action: "3D桌面/切換", keywords: ["tab"], win: "Win + Tab", mac: "⌃ + ↑" },
+            { id: 66, category: "系統功能", action: "螢幕截圖", keywords: ["screenshot"], win: "Ctrl + Alt + A", mac: "⌘ + Shift + 4" }
+        ];
+
+        const BotIcon = ({ state }) => {
+            const botMain = "#ffffff";
+            const botAcc = "#00d4ff";
+            return (
+                <svg viewBox="0 0 200 160" className="w-24 h-24 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(0,212,255,0.5)]">
+                    <rect x="40" y="40" width="120" height="100" rx="20" fill="rgba(255,255,255,0.1)" stroke={botAcc} strokeWidth="2" />
+                    <rect x="55" y="55" width="90" height="70" rx="10" fill="#0f172a" />
+                    <g transform={state === 'searching' ? 'translate(0,4)' : ''}>
+                        <circle cx="80" cy="85" r="8" fill={botAcc} className={state==='searching' ? 'animate-pulse' : ''} />
+                        <circle cx="120" cy="85" r="8" fill={botAcc} className={state==='searching' ? 'animate-pulse' : ''} />
+                        <circle cx={state === 'searching' ? 80 : 84} cy="85" r="3" fill="white" />
+                        <circle cx={state === 'searching' ? 120 : 124} cy="85" r="3" fill="white" />
+                    </g>
+                    {state === 'empty' ? 
+                        <path d="M 85 115 Q 100 105 115 115" stroke={botAcc} strokeWidth="3" fill="none" strokeLinecap="round" /> :
+                        <path d="M 85 110 Q 100 118 115 110" stroke={botAcc} strokeWidth="3" fill="none" strokeLinecap="round" />
+                    }
+                </svg>
+            );
+        };
+
+        const App = () => {
+            const [searchTerm, setSearchTerm] = useState("");
+            const [shortcuts, setShortcuts] = useState(() => {
+                const saved = localStorage.getItem('word_god_helper_v1');
+                return saved ? JSON.parse(saved) : INITIAL_DB;
+            });
+
+            const [editingId, setEditingId] = useState(null);
+            const [form, setForm] = useState({ category: '', action: '', win: '', mac: '', keywords: '' });
+            const [newCategory, setNewCategory] = useState("");
+            const formRef = useRef(null);
+
+            useEffect(() => {
+                localStorage.setItem('word_god_helper_v1', JSON.stringify(shortcuts));
+            }, [shortcuts]);
+
+            const categories = useMemo(() => [...new Set(shortcuts.map(s => s.category))], [shortcuts]);
+
+            const handleDelete = (id) => {
+                if (confirm("確定要移除此神助攻快捷鍵嗎？")) {
+                    setShortcuts(shortcuts.filter(s => s.id !== id));
+                }
+            };
+
+            const startEdit = (item) => {
+                setEditingId(item.id);
+                setForm({ ...item, keywords: Array.isArray(item.keywords) ? item.keywords.join(' ') : item.keywords });
+                formRef.current.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            const handleSave = (e) => {
+                e.preventDefault();
+                const finalCategory = form.category === 'NEW' ? newCategory : form.category;
+                if (!finalCategory || !form.action || !form.win) {
+                    alert("請輸入完整內容！"); return;
+                }
+                const payload = {
+                    ...form,
+                    id: editingId || Date.now(),
+                    category: finalCategory,
+                    keywords: String(form.keywords).split(' ').filter(k => k)
+                };
+                if (editingId) {
+                    setShortcuts(shortcuts.map(s => s.id === editingId ? payload : s));
+                    setEditingId(null);
+                } else {
+                    setShortcuts([...shortcuts, payload]);
+                }
+                setForm({ category: '', action: '', win: '', mac: '', keywords: '' });
+                setNewCategory("");
+            };
+
+            const filteredData = shortcuts.filter(s => 
+                s.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.win.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            const groupedData = filteredData.reduce((acc, item) => {
+                if (!acc[item.category]) acc[item.category] = [];
+                acc[item.category].push(item);
+                return acc;
+            }, {});
+
+            return (
+                <div className="min-h-screen">
+                    {/* 頁首：整合提供的背景圖 */}
+                    <header className="hero-bg py-16 md:py-24 px-4 text-center">
+                        <BotIcon state={searchTerm ? (filteredData.length ? 'searching' : 'empty') : 'idle'} />
+                        <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-md">
+                            Word <span className="text-cyan-400">快捷鍵神助攻</span>
+                        </h1>
+                        <p className="text-cyan-100/70 text-lg mb-10 max-w-xl mx-auto">整合官方 66 項常用技巧，讓您的生產力瞬間爆發</p>
+                        
+                        <div className="max-w-2xl mx-auto relative">
+                            <input 
+                                type="text" 
+                                placeholder="輸入功能名稱或關鍵字..."
+                                className="w-full glass-effect px-8 py-5 rounded-3xl text-white text-xl outline-none focus:ring-4 focus:ring-cyan-500/30 placeholder-cyan-200/50 transition-all shadow-2xl"
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                            />
+                            {searchTerm && <button onClick={()=>setSearchTerm("")} className="absolute right-6 top-1/2 -translate-y-1/2 text-cyan-200">✕</button>}
+                        </div>
+                    </header>
+
+                    <main className="max-w-6xl mx-auto px-4 py-16 mb-24">
+                        {Object.keys(groupedData).length > 0 ? (
+                            Object.keys(groupedData).map(cat => (
+                                <section key={cat} className="mb-16">
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-8 flex items-center gap-4">
+                                        <div className="w-2 h-8 bg-cyan-500 rounded-full"></div>
+                                        {cat}
+                                        <span className="text-sm font-normal text-slate-400 bg-white border border-slate-200 px-3 py-1 rounded-full">{groupedData[cat].length}</span>
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {groupedData[cat].map(item => (
+                                            <div key={item.id} className={`bg-white p-6 rounded-3xl border transition-all group relative ${editingId === item.id ? 'card-edit-mode ring-2 ring-blue-500 scale-105 z-10' : 'border-slate-100 hover:shadow-xl hover:-translate-y-1'}`}>
+                                                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onClick={() => startEdit(item)} className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                                                    <button onClick={() => handleDelete(item.id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                                </div>
+                                                <h3 className="font-black text-slate-800 mb-6 pr-12 text-lg leading-tight">{item.action}</h3>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center gap-3 bg-blue-50/50 p-3 rounded-2xl border border-blue-100/50">
+                                                        <div className="w-8 h-8 flex items-center justify-center bg-blue-600 rounded-lg text-white font-black text-[10px]">WIN</div>
+                                                        <span className="text-blue-800 font-mono font-bold text-sm">{item.win}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                                                        <div className="w-8 h-8 flex items-center justify-center bg-slate-400 rounded-lg text-white font-black text-[10px]">MAC</div>
+                                                        <span className="text-slate-600 font-mono font-bold text-sm">{item.mac || item.win}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            ))
+                        ) : (
+                            <div className="text-center py-32 bg-white rounded-[3rem] border-4 border-dashed border-slate-200">
+                                <p className="text-2xl text-slate-400 font-bold">找不到相應的技巧... 換個關鍵字試試？</p>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* 管理欄位 */}
+                    <div ref={formRef} className={`max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl border-4 transition-all p-10 mb-20 ${editingId ? 'border-cyan-400' : 'border-white'}`}>
+                        <div className="flex items-center justify-between mb-10">
+                            <h2 className="text-3xl font-black text-slate-800">
+                                {editingId ? '🛠 修改神助攻' : '➕ 新增神助攻'}
+                            </h2>
+                            {editingId && (
+                                <button onClick={() => { setEditingId(null); setForm({ category: '', action: '', win: '', mac: '', keywords: '' }); }} className="text-cyan-600 hover:underline font-bold">放棄修改</button>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="md:col-span-2 space-y-3">
+                                <label className="text-sm font-black text-slate-500 uppercase tracking-widest">分類群組</label>
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    <select 
+                                        className="flex-1 px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-cyan-400 outline-none transition-all font-bold"
+                                        value={form.category}
+                                        onChange={e => setForm({...form, category: e.target.value})}
+                                    >
+                                        <option value="">選擇分類...</option>
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                        <option value="NEW">+ 新增群組</option>
+                                    </select>
+                                    {form.category === 'NEW' && (
+                                        <input 
+                                            type="text" placeholder="輸入新分類名稱"
+                                            className="flex-1 px-6 py-4 rounded-2xl border-2 border-cyan-400 focus:ring-4 focus:ring-cyan-50 outline-none font-bold"
+                                            value={newCategory}
+                                            onChange={e => setNewCategory(e.target.value)}
+                                            autoFocus
+                                        />
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-sm font-black text-slate-500 uppercase tracking-widest">功能名稱 (Action)</label>
+                                <input 
+                                    type="text" placeholder="例如：合併儲存格"
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-cyan-400 outline-none transition-all font-bold"
+                                    value={form.action}
+                                    onChange={e => setForm({...form, action: e.target.value})}
+                                />
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-sm font-black text-slate-500 uppercase tracking-widest">Windows 鍵位</label>
+                                <input 
+                                    type="text" placeholder="Ctrl + ..."
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-cyan-400 outline-none transition-all font-mono font-bold"
+                                    value={form.win}
+                                    onChange={e => setForm({...form, win: e.target.value})}
+                                />
+                            </div>
+
+                            <div className="space-y-3 md:col-span-2">
+                                <label className="text-sm font-black text-slate-500 uppercase tracking-widest">Mac 鍵位 (留空同 Win)</label>
+                                <div className="relative">
+                                    <input 
+                                        type="text" placeholder="⌘ + ..."
+                                        className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-cyan-400 outline-none transition-all font-mono font-bold"
+                                        value={form.mac}
+                                        onChange={e => setForm({...form, mac: e.target.value})}
+                                    />
+                                    <div className="flex gap-2 mt-3">
+                                        {['⌘', '⌥', '⇧', '⌃'].map(s => (
+                                            <button key={s} type="button" onClick={() => setForm({...form, mac: form.mac + s})} className="px-4 py-2 bg-slate-100 rounded-xl text-lg hover:bg-cyan-100 transition-colors">{s}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button className="md:col-span-2 w-full py-5 bg-cyan-500 text-white text-xl font-black rounded-3xl hover:bg-cyan-600 shadow-xl shadow-cyan-200 transition-all active:scale-95">
+                                {editingId ? '💾 儲存修改內容' : '✨ 立即新增神助攻'}
+                            </button>
+                        </form>
+                    </div>
+
+                    <footer className="text-center text-slate-400 text-sm py-16 border-t border-slate-200">
+                        Made with 🌌 for High-Performance Users
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
