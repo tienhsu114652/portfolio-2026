@@ -455,6 +455,29 @@
                         <div class="font-bold text-tealbrand-900">電腦與系統軟體</div>
                         <p class="text-tealbrand-900/80 mt-1">TIPTOP ERP系統、Excel、Word、PowerPoint、Outlook</p>
                     </div>
+
+                    <!-- 方塊按鈕：Word 快捷鍵神助攻工具 -->
+                    <div class="border-t border-tealbrand-100 pt-3">
+                        <button onclick="openModal('modal-word-shortcuts')" class="w-full text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 z-10">
+                                <div class="w-11 h-11 rounded-lg bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-file-word"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-sm sm:text-base text-white">Word 快捷鍵神助攻</span>
+                                        <span class="bg-sunyellow-500 text-tealbrand-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded">管理大師工具</span>
+                                    </div>
+                                    <p class="text-xs text-tealbrand-100/80 mt-0.5">點擊開啟：物控行政必備 Word 快捷鍵速查工具</p>
+                                </div>
+                            </div>
+                            <div class="z-10 shrink-0 bg-white/10 group-hover:bg-sunyellow-500 group-hover:text-tealbrand-950 text-white text-xs px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1">
+                                <span>開啟工具</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </button>
+                    </div>
+
                     <div class="border-t border-tealbrand-100 pt-2.5">
                         <div class="font-bold text-tealbrand-900">打字能力與語言</div>
                         <p class="text-tealbrand-900/80 mt-1">中文打字 30字/分 (注音)｜英文打字 60字/分｜英文聽說讀寫略通</p>
@@ -605,6 +628,52 @@
         </div>
     </div>
 
+    <!-- Modal 4: Word 快捷鍵神助攻 - 管理大師 工具 -->
+    <div id="modal-word-shortcuts" class="fixed inset-0 bg-tealbrand-950/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white max-w-2xl w-full rounded-2xl p-5 sm:p-7 space-y-4 relative shadow-2xl border border-tealbrand-100 max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-tealbrand-100 pb-3 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-lg bg-tealbrand-600 text-white flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-file-word"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-tealbrand-900">Word 快捷鍵神助攻 - 管理大師</h3>
+                        <p class="text-xs text-tealbrand-600">提升文書與倉管表單處理效率之必備速查工具</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-word-shortcuts')" class="text-tealbrand-700 hover:text-tealbrand-900 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="space-y-2 shrink-0">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-tealbrand-400 text-xs"></i>
+                    <input type="text" id="shortcut-search" oninput="filterShortcuts()" placeholder="搜尋快捷鍵功能或按鍵（如：重複、表格、搜尋...）" class="w-full pl-9 pr-3 py-2 bg-mintbg-50 text-xs sm:text-sm text-tealbrand-900 rounded-xl border border-tealbrand-200 focus:outline-none focus:border-tealbrand-600 transition">
+                </div>
+                <div class="flex flex-wrap gap-1.5 text-xs" id="shortcut-tabs">
+                    <button onclick="setShortcutCategory('all')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-tealbrand-600 text-white font-medium transition" data-cat="all">全部</button>
+                    <button onclick="setShortcutCategory('base')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="base">常用基礎</button>
+                    <button onclick="setShortcutCategory('table')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="table">表格排版</button>
+                    <button onclick="setShortcutCategory('select')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="select">快速選取</button>
+                    <button onclick="setShortcutCategory('pro')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="pro">物控高效神招</button>
+                </div>
+            </div>
+
+            <!-- Shortcuts List (Scrollable) -->
+            <div class="overflow-y-auto space-y-2 pr-1 flex-1 text-xs sm:text-sm" id="shortcut-list">
+                <!-- Items populated dynamically by JS -->
+            </div>
+
+            <div class="pt-3 border-t border-tealbrand-100 flex items-center justify-between text-xs shrink-0">
+                <span class="text-tealbrand-600"><i class="fa-solid fa-lightbulb text-sunyellow-500 mr-1"></i>小技巧：隨時使用搜尋框即可快速檢索組合鍵</span>
+                <button onclick="closeModal('modal-word-shortcuts')" class="px-4 py-1.5 bg-tealbrand-100 hover:bg-tealbrand-200 text-tealbrand-900 font-semibold rounded-lg transition">關閉工具</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function toggleMenu() {
             const menu = document.getElementById('mobile-menu');
@@ -613,10 +682,83 @@
 
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
+            if (id === 'modal-word-shortcuts') {
+                renderShortcuts();
+            }
         }
 
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
+        }
+
+        // Word Shortcuts Tool Data
+        const shortcutsData = [
+            { cat: 'pro', keys: ['F4'], name: '重複上一步動作', desc: '物控核對與格式重複套用必備神招，省時50%' },
+            { cat: 'pro', keys: ['Ctrl', 'F2'], name: '列印預覽', desc: '快速查看表單列印範圍與頁面邊界' },
+            { cat: 'pro', keys: ['Shift', 'F3'], name: '英文大小寫切換', desc: '英文料號品名大小寫快速轉換' },
+            { cat: 'base', keys: ['Ctrl', 'Z'], name: '復原（Undo）', desc: '撤銷上一步誤操作' },
+            { cat: 'base', keys: ['Ctrl', 'Y'], name: '重做（Redo）', desc: '恢復剛撤銷的動作' },
+            { cat: 'base', keys: ['Ctrl', 'F'], name: '尋找文字/料號', desc: '在大文件中快速查找特定文字或料號' },
+            { cat: 'base', keys: ['Ctrl', 'H'], name: '取代文字', desc: '批次更換格式或名稱' },
+            { cat: 'base', keys: ['Ctrl', 'S'], name: '儲存檔案', desc: '隨時存檔防止資料流失' },
+            { cat: 'base', keys: ['Ctrl', 'A'], name: '全選文字', desc: '選取整份文件所有內容' },
+            { cat: 'table', keys: ['Alt', 'Shift', '↑ / ↓'], name: '上移/下移表格列', desc: '不需剪貼，快速調整表格列或段落順序' },
+            { cat: 'table', keys: ['Tab'], name: '下一格 / 新增列', desc: '在表格最後一格按下可直接新增下一列' },
+            { cat: 'table', keys: ['Shift', 'Tab'], name: '上一格', desc: '移動至表格前一個儲存格' },
+            { cat: 'table', keys: ['Ctrl', 'Shift', 'Enter'], name: '拆分表格', desc: '在游標處將一個表格分割為兩個' },
+            { cat: 'select', keys: ['Ctrl', 'Shift', '← / →'], name: '逐字/逐詞選取', desc: '精準快速選取特定詞彙或料號' },
+            { cat: 'select', keys: ['Shift', 'Home / End'], name: '選取至行首/行尾', desc: '快速選取整行文字' },
+            { cat: 'select', keys: ['Ctrl', 'Shift', 'Home / End'], name: '選取至文件開頭/結尾', desc: '大規模選取內容' }
+        ];
+
+        let currentCat = 'all';
+
+        function setShortcutCategory(cat) {
+            currentCat = cat;
+            document.querySelectorAll('.shortcut-tab').forEach(tab => {
+                if (tab.dataset.cat === cat) {
+                    tab.className = 'shortcut-tab px-2.5 py-1 rounded-lg bg-tealbrand-600 text-white font-medium transition';
+                } else {
+                    tab.className = 'shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition';
+                }
+            });
+            renderShortcuts();
+        }
+
+        function filterShortcuts() {
+            renderShortcuts();
+        }
+
+        function renderShortcuts() {
+            const search = (document.getElementById('shortcut-search')?.value || '').toLowerCase();
+            const container = document.getElementById('shortcut-list');
+            if (!container) return;
+
+            const filtered = shortcutsData.filter(item => {
+                const matchCat = currentCat === 'all' || item.cat === currentCat;
+                const matchSearch = !search || 
+                    item.name.toLowerCase().includes(search) || 
+                    item.desc.toLowerCase().includes(search) || 
+                    item.keys.join(' ').toLowerCase().includes(search);
+                return matchCat && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-center py-6 text-tealbrand-600 text-xs">沒有找到相符的快捷鍵</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => `
+                <div class="bg-mintbg-50 hover:bg-tealbrand-50 border border-tealbrand-100 p-2.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition">
+                    <div>
+                        <div class="font-bold text-tealbrand-900">${item.name}</div>
+                        <div class="text-xs text-tealbrand-700/80 mt-0.5">${item.desc}</div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        ${item.keys.map(k => `<kbd class="px-2 py-1 bg-white border border-tealbrand-300 rounded text-xs font-mono font-bold text-tealbrand-900 shadow-xs">${k}</kbd>`).join('<span class="text-tealbrand-400 text-xs">+</span>')}
+                    </div>
+                </div>
+            `).join('');
         }
     </script>
 </body>
