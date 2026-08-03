@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徐緯誠 | 資深倉管物控專家 - 個人履歷單頁</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans TC & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mintbg: {
+                            50: '#f2fbf9',
+                            100: '#e1f6f2',
+                            200: '#c6ede5',
+                        },
+                        tealbrand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        sunyellow: {
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                        },
+                        oceanblue: {
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        darkslate: '#132e2c'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f2f9f8;
+            color: #132e2c;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+        .bg-card-custom {
+            background-color: #FFFFFF;
+            border: 1px solid #d3e8e4;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: #FFFFFF !important;
+                color: #000000 !important;
+            }
+            .bg-card-custom {
+                border: 1px solid #CCCCCC !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-tealbrand-100 selection:text-tealbrand-900">
+
+    <!-- Sticky Navigation Header -->
+    <nav class="sticky top-0 z-40 bg-[#f2f9f8]/90 backdrop-blur-md border-b border-[#d3e8e4] transition-all no-print">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <a href="#hero" class="font-bold text-lg text-tealbrand-800 tracking-wide flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-tealbrand-600 text-white flex items-center justify-center text-sm shadow-sm">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </span>
+                <span>徐緯誠</span>
+            </a>
+            <!-- Action / Mobile Toggle -->
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="text-xs sm:text-sm px-3 py-1.5 rounded-lg border border-tealbrand-600/30 text-tealbrand-800 hover:bg-tealbrand-50 transition flex items-center gap-1.5 font-medium">
+                    <i class="fa-solid fa-print"></i>
+                    <span class="hidden sm:inline">列印 / 存為PDF</span>
+                </button>
+                <button id="menu-btn" onclick="toggleMenu()" class="sm:hidden p-2 text-tealbrand-800 hover:text-tealbrand-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+            <!-- Desktop Links -->
+            <div class="hidden sm:flex gap-6 text-sm font-medium text-tealbrand-900/80">
+                <a href="#about" class="hover:text-tealbrand-600 transition">關於我</a>
+                <a href="#skills" class="hover:text-tealbrand-600 transition">專業技能</a>
+                <a href="#portfolio" class="hover:text-tealbrand-600 transition">歷練專案</a>
+                <a href="#experience" class="hover:text-tealbrand-600 transition">工作經歷</a>
+                <a href="#autobiography" class="hover:text-tealbrand-600 transition">自傳</a>
+                <a href="#contact" class="hover:text-tealbrand-600 transition">聯絡方式</a>
+            </div>
+        </div>
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden sm:hidden border-t border-tealbrand-100 bg-mintbg-50 px-4 py-3 space-y-2 text-sm text-tealbrand-900">
+            <a href="#about" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">關於我</a>
+            <a href="#skills" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">專業技能</a>
+            <a href="#portfolio" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">歷練專案</a>
+            <a href="#experience" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">工作經歷</a>
+            <a href="#autobiography" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">自傳</a>
+            <a href="#contact" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">聯絡方式</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-6 sm:pt-12 sm:pb-8">
+        <div class="bg-card-custom rounded-2xl p-6 sm:p-10 shadow-sm relative overflow-hidden border border-tealbrand-100">
+            <!-- Decorative Vector Background Accent -->
+            <div class="absolute -right-12 -bottom-12 opacity-10 pointer-events-none text-tealbrand-800">
+                <i class="fa-solid fa-warehouse text-[160px]"></i>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10">
+                <!-- Avatar / Badge -->
+                <div class="relative shrink-0">
+                    <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-br from-tealbrand-500 to-oceanblue-600 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
+                        <!-- Real Photo -->
+                        <img src="https://tienhsu114652.github.io/portfolio2026/tien.png" alt="徐緯誠大頭照" class="w-full h-full object-cover object-top" onerror="this.style.display='none'; document.getElementById('avatar-fallback').classList.remove('hidden');">
+                        
+                        <!-- Fallback Vector Avatar (Matching photo features: Glasses, dark short hair, light shirt) for live web preview -->
+                        <svg id="avatar-fallback" class="w-full h-full hidden bg-mintbg-100" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="120" height="120" fill="#e1f6f2"/>
+                            <!-- Shoulders & Shirt -->
+                            <path d="M20 120 C20 92, 35 80, 60 80 C85 80, 100 92, 100 120 Z" fill="#cbd5e1"/>
+                            <path d="M48 80 L60 95 L72 80 Z" fill="#ffffff"/>
+                            <!-- Neck -->
+                            <rect x="52" y="66" width="16" height="18" fill="#f3d0b5" rx="3"/>
+                            <!-- Head & Ears -->
+                            <circle cx="37" cy="46" r="4.5" fill="#f7d8c2"/>
+                            <circle cx="83" cy="46" r="4.5" fill="#f7d8c2"/>
+                            <path d="M38 42 C38 24, 82 24, 82 42 C82 65, 70 72, 60 72 C50 72, 38 65, 38 42 Z" fill="#f7d8c2"/>
+                            <!-- Hair -->
+                            <path d="M35 40 C35 20, 46 14, 60 14 C74 14, 85 20, 85 40 C80 29, 70 23, 60 24 C48 23, 39 29, 35 40 Z" fill="#1e293b"/>
+                            <!-- Eyebrows -->
+                            <path d="M43 36 Q50 34 55 36" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M65 36 Q70 34 77 36" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+                            <!-- Eyes -->
+                            <circle cx="49" cy="42" r="2.5" fill="#1e293b"/>
+                            <circle cx="71" cy="42" r="2.5" fill="#1e293b"/>
+                            <!-- Glasses -->
+                            <rect x="41" y="37" width="15" height="11" rx="2" stroke="#475569" stroke-width="2" fill="none"/>
+                            <rect x="64" y="37" width="15" height="11" rx="2" stroke="#475569" stroke-width="2" fill="none"/>
+                            <line x1="56" y1="41" x2="64" y2="41" stroke="#475569" stroke-width="2"/>
+                            <line x1="36" y1="41" x2="41" y2="41" stroke="#475569" stroke-width="2"/>
+                            <line x1="79" y1="41" x2="84" y2="41" stroke="#475569" stroke-width="2"/>
+                            <!-- Nose & Mouth -->
+                            <path d="M59 45 L58 51 L62 51" stroke="#e5b195" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            <path d="M53 60 Q60 63 67 60" stroke="#b91c1c" stroke-width="1.5" stroke-linecap="round" opacity="0.6" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Info Header -->
+                <div class="text-center md:text-left flex-1">
+                    <div class="inline-flex items-center gap-2 bg-tealbrand-50 text-tealbrand-800 text-xs font-semibold px-3 py-1 rounded-full border border-tealbrand-200 mb-2">
+                        <i class="fa-solid fa-briefcase text-sunyellow-600"></i> 20年+ 資深倉管物控 / 資材專家
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-tealbrand-900 tracking-tight mb-2">
+                        徐緯誠
+                    </h1>
+                    <!-- One sentence positioning statement -->
+                    <p class="text-tealbrand-900/80 text-base sm:text-lg leading-relaxed mb-4 font-normal">
+                        「以縝密嚴謹的細節掌控與跨部門協調能力，達成<span class="font-bold text-tealbrand-800">料帳合一</span>、優化<span class="font-bold text-tealbrand-800">庫存週轉</span>與高效物流動線。」
+                    </p>
+
+                    <!-- Quick Action Contact Tags -->
+                    <div class="flex flex-wrap justify-center md:justify-start gap-2.5 text-xs sm:text-sm">
+                        <a href="tel:0925068163" class="inline-flex items-center gap-1.5 bg-mintbg-100 hover:bg-tealbrand-100 text-tealbrand-800 px-3 py-1.5 rounded-xl transition font-medium border border-tealbrand-200/50">
+                            <i class="fa-solid fa-phone text-oceanblue-600"></i> 0925-068-163
+                        </a>
+                        <a href="mailto:tien114652@hotmail.com" class="inline-flex items-center gap-1.5 bg-mintbg-100 hover:bg-tealbrand-100 text-tealbrand-800 px-3 py-1.5 rounded-xl transition font-medium border border-tealbrand-200/50">
+                            <i class="fa-solid fa-envelope text-oceanblue-600"></i> tien114652@hotmail.com
+                        </a>
+                        <span class="inline-flex items-center gap-1.5 bg-mintbg-100 text-tealbrand-800 px-3 py-1.5 rounded-xl font-medium border border-tealbrand-200/50">
+                            <i class="fa-solid fa-location-dot text-sunyellow-600"></i> 桃園市平鎮區
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Me Section -->
+    <section id="about" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm">
+            <h2 class="text-xl font-bold text-tealbrand-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-address-card text-tealbrand-600"></i> 關於我
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 text-tealbrand-900/80 leading-relaxed text-sm sm:text-base">
+                <div class="md:col-span-3 space-y-3">
+                    <p>
+                        您好，我是徐緯誠。具備超過 <strong class="text-tealbrand-900 font-semibold">20 年資材、倉管與物料管理經驗</strong>。職涯歷練涵蓋華碩電腦（大型科技廠）、長生太陽能（綠能製造）、安捷企業（橡塑膠）及印田實業（汽車零件）。
+                    </p>
+                    <p>
+                        性格溫和縝密、責任感強且溝通圓融。擅長將混亂的庫存結構化管理，透過 <strong class="text-tealbrand-900 font-semibold">TIPTOP / ERP 系統</strong> 正確落實「領、發、備、退料」與盤點作業，能第一時間化解現場物料異常，確保生產線流暢運作。
+                    </p>
+                </div>
+                <!-- Card with +20% width (md:col-span-2 out of 5) and +30% height spacing -->
+                <div class="md:col-span-2 bg-tealbrand-50/70 px-6 py-6 rounded-xl border border-tealbrand-100 space-y-4 text-xs sm:text-sm">
+                    <div class="font-bold text-tealbrand-900 border-b border-tealbrand-200/60 pb-2.5 text-sm sm:text-base">個人概況與偏好</div>
+                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">期待職務：</span><span class="font-semibold text-tealbrand-900">物管員 / 倉管員 / 備料員</span></div>
+                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">期待上班：</span><span class="font-semibold text-tealbrand-900">日班 / 週休二日</span></div>
+                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">工作地點：</span><span class="font-semibold text-tealbrand-900">桃園市區域</span></div>
+                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">專業證照：</span><span class="font-semibold text-tealbrand-900">堆高機 / 危傷運送證</span></div>
+                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">駕照持有：</span><span class="font-semibold text-tealbrand-900">普通重機 / 自排汽車</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3 Core Skills Section -->
+    <section id="skills" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold text-tealbrand-900 flex items-center gap-2">
+                <i class="fa-solid fa-gears text-tealbrand-600"></i> 3 大核心專業技能
+            </h2>
+            <p class="text-tealbrand-700 text-xs sm:text-sm">累積20年現場實戰，兼具系統邏輯與現場執行能力</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Skill 1 -->
+            <div class="bg-card-custom p-6 rounded-2xl shadow-sm hover:border-tealbrand-500 hover:shadow transition group">
+                <div class="w-12 h-12 rounded-xl bg-tealbrand-100 border border-tealbrand-200 flex items-center justify-center text-tealbrand-700 text-xl mb-4 group-hover:bg-tealbrand-600 group-hover:text-white transition">
+                    <i class="fa-solid fa-cubes-stacked"></i>
+                </div>
+                <h3 class="text-base font-bold text-tealbrand-900 mb-2">1. 庫存管控與料帳合一</h3>
+                <p class="text-xs sm:text-sm text-tealbrand-900/70 leading-relaxed mb-3">
+                    精通 TIPTOP 及 ERP 系統運作，熟練執行工單領退、調撥與異常帳務調整，嚴格控制帳實相符。
+                </p>
+                <ul class="text-xs text-tealbrand-800 space-y-1.5 border-t border-tealbrand-100 pt-3">
+                    <li><i class="fa-solid fa-circle-check text-oceanblue-600 mr-1.5"></i> TIPTOP / ERP 系統操作</li>
+                    <li><i class="fa-solid fa-circle-check text-oceanblue-600 mr-1.5"></i> 週期盤點與年度大盤點</li>
+                    <li><i class="fa-solid fa-circle-check text-oceanblue-600 mr-1.5"></i> 帳面異常原因追蹤與化解</li>
+                </ul>
+            </div>
+
+            <!-- Skill 2 -->
+            <div class="bg-card-custom p-6 rounded-2xl shadow-sm hover:border-tealbrand-500 hover:shadow transition group">
+                <div class="w-12 h-12 rounded-xl bg-sunyellow-400/20 border border-sunyellow-500/30 flex items-center justify-center text-sunyellow-600 text-xl mb-4 group-hover:bg-sunyellow-500 group-hover:text-white transition">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                </div>
+                <h3 class="text-base font-bold text-tealbrand-900 mb-2">2. 倉儲作業與發料調度</h3>
+                <p class="text-xs sm:text-sm text-tealbrand-900/70 leading-relaxed mb-3">
+                    掌握進、備、領、發、退、報廢全流程。合理規劃庫區動線，確保產線備料精準不中斷。
+                </p>
+                <ul class="text-xs text-tealbrand-800 space-y-1.5 border-t border-tealbrand-100 pt-3">
+                    <li><i class="fa-solid fa-circle-check text-sunyellow-600 mr-1.5"></i> 電子/橡塑膠/汽車零件資材</li>
+                    <li><i class="fa-solid fa-circle-check text-sunyellow-600 mr-1.5"></i> 出貨排程與包裝管理</li>
+                    <li><i class="fa-solid fa-circle-check text-sunyellow-600 mr-1.5"></i> 閒置廢料清理提昇週轉率</li>
+                </ul>
+            </div>
+
+            <!-- Skill 3 -->
+            <div class="bg-card-custom p-6 rounded-2xl shadow-sm hover:border-tealbrand-500 hover:shadow transition group">
+                <div class="w-12 h-12 rounded-xl bg-oceanblue-500/10 border border-oceanblue-500/20 flex items-center justify-center text-oceanblue-600 text-xl mb-4 group-hover:bg-oceanblue-600 group-hover:text-white transition">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                </div>
+                <h3 class="text-base font-bold text-tealbrand-900 mb-2">3. 特用操作與跨部協調</h3>
+                <p class="text-xs sm:text-sm text-tealbrand-900/70 leading-relaxed mb-3">
+                    持有國家技術士堆高機證照與危傷物品運送證。能順暢對接供應商、採購與生產部門。
+                </p>
+                <ul class="text-xs text-tealbrand-800 space-y-1.5 border-t border-tealbrand-100 pt-3">
+                    <li><i class="fa-solid fa-circle-check text-tealbrand-600 mr-1.5"></i> 堆高機操作技術士 (單一級)</li>
+                    <li><i class="fa-solid fa-circle-check text-tealbrand-600 mr-1.5"></i> 危險物品運送人員證明</li>
+                    <li><i class="fa-solid fa-circle-check text-tealbrand-600 mr-1.5"></i> 廠區/委外收送貨作業</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3 Portfolio Placeholders / Key Highlights -->
+    <section id="portfolio" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold text-tealbrand-900 flex items-center gap-2">
+                <i class="fa-solid fa-folder-open text-tealbrand-600"></i> 3 項重要資歷與專案實練
+            </h2>
+            <p class="text-tealbrand-700 text-xs sm:text-sm">歷年在重點企業之物料管理與倉儲維運成果代表</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Project / Showcase Area 1 -->
+            <div class="bg-card-custom rounded-2xl overflow-hidden shadow-sm flex flex-col border border-tealbrand-100 hover:border-tealbrand-400 transition">
+                <div class="bg-tealbrand-800 text-white p-4 relative">
+                    <span class="text-[11px] bg-sunyellow-500 text-tealbrand-950 font-extrabold px-2 py-0.5 rounded shadow-sm">實務代表作 01</span>
+                    <h3 class="font-bold text-base mt-2 leading-snug">太陽能廠庫存與廢料優化專案</h3>
+                    <p class="text-xs text-tealbrand-100 mt-1">長生太陽能 | 2011 ~ 2019</p>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <p class="text-xs sm:text-sm text-tealbrand-900/75 leading-relaxed">
+                        領導10人以內團隊，管控高價值太陽能材料進出與庫存。成功推動閒置廢料處置機制，有效降低呆滯資材比例，顯著提昇倉庫空間效益與資金週轉率。
+                    </p>
+                    <button onclick="openModal('modal1')" class="text-xs text-tealbrand-700 font-bold hover:text-tealbrand-900 inline-flex items-center gap-1">
+                        查看專案說明 <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Project / Showcase Area 2 -->
+            <div class="bg-card-custom rounded-2xl overflow-hidden shadow-sm flex flex-col border border-tealbrand-100 hover:border-tealbrand-400 transition">
+                <div class="bg-tealbrand-800 text-white p-4 relative">
+                    <span class="text-[11px] bg-sunyellow-500 text-tealbrand-950 font-extrabold px-2 py-0.5 rounded shadow-sm">實務代表作 02</span>
+                    <h3 class="font-bold text-base mt-2 leading-snug">橡塑膠原物料控管與跨廠調撥</h3>
+                    <p class="text-xs text-tealbrand-100 mt-1">安捷企業 | 2021 ~ 2025</p>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <p class="text-xs sm:text-sm text-tealbrand-900/75 leading-relaxed">
+                        長達近4年負責生產訂購單開立與塑膠/橡膠原物料精準控管。建構完善的收備退料流程，精準維持料帳一致，確保多產線生產順暢無缺料停機風險。
+                    </p>
+                    <button onclick="openModal('modal2')" class="text-xs text-tealbrand-700 font-bold hover:text-tealbrand-900 inline-flex items-center gap-1">
+                        查看專案說明 <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Project / Showcase Area 3 -->
+            <div class="bg-card-custom rounded-2xl overflow-hidden shadow-sm flex flex-col border border-tealbrand-100 hover:border-tealbrand-400 transition">
+                <div class="bg-tealbrand-800 text-white p-4 relative">
+                    <span class="text-[11px] bg-sunyellow-500 text-tealbrand-950 font-extrabold px-2 py-0.5 rounded shadow-sm">實務代表作 03</span>
+                    <h3 class="font-bold text-base mt-2 leading-snug">大廠級電子零件備發料實務</h3>
+                    <p class="text-xs text-tealbrand-100 mt-1">華碩電腦 | 1999 ~ 2004</p>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <p class="text-xs sm:text-sm text-tealbrand-900/75 leading-relaxed">
+                        在千人規模電腦大廠負責複雜電子零組件之進、備、發、退與報廢作業。建立高效率的零組件管理習慣，培育嚴謹的邏輯化物控基礎。
+                    </p>
+                    <button onclick="openModal('modal3')" class="text-xs text-tealbrand-700 font-bold hover:text-tealbrand-900 inline-flex items-center gap-1">
+                        查看專案說明 <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Experience Section -->
+    <section id="experience" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm">
+            <h2 class="text-xl font-bold text-tealbrand-900 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-timeline text-tealbrand-600"></i> 工作經歷 (累計 20~21 年)
+            </h2>
+
+            <div class="relative border-l-2 border-tealbrand-200 ml-3 sm:ml-4 space-y-8">
+                
+                <!-- Exp 1 -->
+                <div class="relative pl-6 sm:pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-600 border-4 border-white shadow"></span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <h3 class="text-base font-bold text-tealbrand-900">物控｜安捷企業</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-tealbrand-100 text-tealbrand-900 rounded-full w-fit">2021/07 ～ 2025/05 (3年11個月)</span>
+                    </div>
+                    <p class="text-xs text-tealbrand-700 mb-2">桃園市龍潭區｜塑膠制品製造｜規模 51-100人</p>
+                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>開立訂購單與進行原物料數量控管。</li>
+                        <li>維持庫存穩定，協調跨單位發料與調撥進度。</li>
+                    </ul>
+                </div>
+
+                <!-- Exp 2 -->
+                <div class="relative pl-6 sm:pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <h3 class="text-base font-bold text-tealbrand-900">生產企劃部主任管理師｜長生太陽能股份有限公司</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">2011/12 ～ 2019/02 (7年3個月)</span>
+                    </div>
+                    <p class="text-xs text-tealbrand-700 mb-2">桃園市中壢區｜其他電力器材製造｜規模 201-500人｜管理10人以內</p>
+                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>管控庫存物料、管理收貨與儲藏，配合生產發貨進度。</li>
+                        <li>協助規劃跨部門間之物料流通，精準記錄庫存異動。</li>
+                        <li>處理閒置廢料以提高資產週轉率與空間利用。</li>
+                    </ul>
+                </div>
+
+                <!-- Exp 3 -->
+                <div class="relative pl-6 sm:pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <h3 class="text-base font-bold text-tealbrand-900">物控｜安捷企業</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">2008/08 ～ 2010/03 (1年8個月)</span>
+                    </div>
+                    <p class="text-xs text-tealbrand-700 mb-2">桃園市平鎮區｜橡膠制品製造｜規模 101-200人</p>
+                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>原物料管控、調撥及倉儲整體規劃管理。</li>
+                        <li>負責收料、備料、退料與報廢完整流程處理。</li>
+                    </ul>
+                </div>
+
+                <!-- Exp 4 -->
+                <div class="relative pl-6 sm:pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <h3 class="text-base font-bold text-tealbrand-900">倉管組長｜印田實業</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">2005/01 ～ 2007/01 (2年1個月)</span>
+                    </div>
+                    <p class="text-xs text-tealbrand-700 mb-2">桃園市中壢區｜汽車/零件製造｜規模 51-100人｜管理10人以內</p>
+                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>包材採購與倉儲物料管控。</li>
+                        <li>負責出貨排程規劃與包裝出貨安排。</li>
+                    </ul>
+                </div>
+
+                <!-- Exp 5 -->
+                <div class="relative pl-6 sm:pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <h3 class="text-base font-bold text-tealbrand-900">物管員｜華碩電腦</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">1999/02 ～ 2004/07 (5年6個月)</span>
+                    </div>
+                    <p class="text-xs text-tealbrand-700 mb-2">桃園市龜山區｜電腦系統整合服務｜規模 1,001-2,000人</p>
+                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
+                        <li>電子零件進料、備料、發料、退料及報廢標準作業。</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Licenses, Skills & Education Grid -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Licenses & Tools -->
+            <div class="bg-card-custom p-6 rounded-2xl shadow-sm space-y-4">
+                <h3 class="font-bold text-tealbrand-900 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-certificate text-tealbrand-600"></i> 證照與電腦技能
+                </h3>
+                <div class="space-y-3 text-xs sm:text-sm">
+                    <div>
+                        <div class="font-bold text-tealbrand-900">專業證照</div>
+                        <div class="flex flex-wrap gap-2 mt-1.5">
+                            <span class="bg-tealbrand-100 text-tealbrand-900 border border-tealbrand-200 px-2.5 py-1 rounded-lg text-xs font-medium">
+                                <i class="fa-solid fa-certificate text-tealbrand-600 mr-1"></i> 堆高機操作技術士 (單一級)
+                            </span>
+                            <span class="bg-tealbrand-100 text-tealbrand-900 border border-tealbrand-200 px-2.5 py-1 rounded-lg text-xs font-medium">
+                                <i class="fa-solid fa-triangle-exclamation text-sunyellow-600 mr-1"></i> 危險物品運送人員證明
+                            </span>
+                        </div>
+                    </div>
+                    <div class="border-t border-tealbrand-100 pt-2.5">
+                        <div class="font-bold text-tealbrand-900">電腦與系統軟體</div>
+                        <p class="text-tealbrand-900/80 mt-1">TIPTOP ERP系統、Excel、Word、PowerPoint、Outlook</p>
+                    </div>
+                    <div class="border-t border-tealbrand-100 pt-2.5">
+                        <div class="font-bold text-tealbrand-900">打字能力與語言</div>
+                        <p class="text-tealbrand-900/80 mt-1">中文打字 30字/分 (注音)｜英文打字 60字/分｜英文聽說讀寫略通</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education & Drivers License -->
+            <div class="bg-card-custom p-6 rounded-2xl shadow-sm space-y-4">
+                <h3 class="font-bold text-tealbrand-900 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-tealbrand-600"></i> 學歷與交通條件
+                </h3>
+                <div class="space-y-3 text-xs sm:text-sm">
+                    <div>
+                        <div class="font-bold text-tealbrand-900">最高學歷</div>
+                        <p class="text-tealbrand-950 font-medium mt-1">國立桃園高級中學（普通科）</p>
+                        <p class="text-tealbrand-700 text-xs">1984/09 ～ 1987/06 畢業</p>
+                    </div>
+                    <div class="border-t border-tealbrand-100 pt-2.5">
+                        <div class="font-bold text-tealbrand-900">駕照與交通工具</div>
+                        <p class="text-tealbrand-900/80 mt-1">持有普通重型機車、自排小型車駕照，並備有自用車輛可供通勤。</p>
+                    </div>
+                    <div class="border-t border-tealbrand-100 pt-2.5">
+                        <div class="font-bold text-tealbrand-900">兵役狀況</div>
+                        <p class="text-tealbrand-900/80 mt-1">役畢</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Autobiography Section -->
+    <section id="autobiography" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm border border-tealbrand-100">
+            <h2 class="text-xl font-bold text-tealbrand-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-tealbrand-600"></i> 自傳
+            </h2>
+            <div class="text-tealbrand-900/80 text-sm sm:text-base leading-relaxed space-y-4 font-normal">
+                <p>
+                    您好，我叫徐緯誠。出生於小康家庭，家庭成員3人，已婚且育有1子。性情溫和，做事仔細縝密。父母從小灌輸飲水思源的觀念並培養獨立思考能力，造就了我負責任且積極進取的人生態度。樂觀的性格使我在面對工作挑戰時，總能冷靜應對、圓滿解決。
+                </p>
+                <p>
+                    職涯早期於知名大廠「華碩電腦」擔任物管員，奠定了極其紮實的資材與倉儲基礎；後續於長生太陽能擔任生產企劃部主任管理師，以及安捷企業負責物控，累積了超過20年豐富的實務經歷。這些過程讓我深度理解團隊合作、溝通協調的重要性，並培養出快速理出事情輕重緩急、有效率完成交辦目標的能力。
+                </p>
+                <p>
+                    我具備 <strong class="text-tealbrand-900 font-semibold">堆高機技術士證照</strong> 與 <strong class="text-tealbrand-900 font-semibold">危險物品運送人員證明</strong>，熟練操作 TIPTOP ERP 系統及 Office 辦公軟體。未來若承蒙貴公司賞賜，我定將發揮所学，秉持積極細心的態度達成各項目標，與貴單位一同茁壯成長！
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="max-w-4xl mx-auto px-4 sm:px-6 pt-4 pb-16">
+        <div class="bg-tealbrand-900 text-tealbrand-50 rounded-2xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+            <!-- Decorative Accent Circle -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-tealbrand-700/30 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 text-center sm:text-left">
+                <h2 class="text-2xl font-bold text-white mb-2">準備好招募具備20年經驗的資材專家了嗎？</h2>
+                <p class="text-tealbrand-100/80 text-sm mb-6">歡迎透過電話或 Email 直接與我聯繫，我將於最短時間內回覆您。</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+                    <a href="tel:0925068163" class="bg-sunyellow-500 hover:bg-sunyellow-400 text-tealbrand-950 font-bold p-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                        <i class="fa-solid fa-phone"></i>
+                        <span>撥打手機：0925-068-163</span>
+                    </a>
+                    <a href="mailto:tien114652@hotmail.com" class="bg-tealbrand-800 hover:bg-tealbrand-700 border border-tealbrand-700 text-white font-semibold p-3.5 rounded-xl flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>發送 Email 郵件</span>
+                    </a>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-tealbrand-800 flex flex-wrap justify-between text-xs text-tealbrand-200/80 gap-2">
+                    <div><i class="fa-solid fa-house text-sunyellow-500 mr-1"></i> 居住地址：桃園市平鎮區大昌路</div>
+                    <div><i class="fa-solid fa-clock text-sunyellow-500 mr-1"></i> 可方便聯繫時間：00:00 ~ 24:00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-xs text-tealbrand-800/60 mt-8 no-print">
+            © <script>document.write(new Date().getFullYear())</script> 徐緯誠 個人履歷單頁
+        </div>
+    </section>
+
+    <!-- Modal 1: Project Detail 1 -->
+    <div id="modal1" class="fixed inset-0 bg-tealbrand-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white max-w-lg w-full rounded-2xl p-6 space-y-4 relative shadow-2xl border border-tealbrand-100">
+            <button onclick="closeModal('modal1')" class="absolute top-4 right-4 text-tealbrand-700 hover:text-tealbrand-900">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold text-tealbrand-900">太陽能廠庫存與廢料優化專案</h3>
+            <p class="text-xs text-tealbrand-700 font-semibold">任職單位：長生太陽能股份有限公司 (主管職)</p>
+            <div class="text-xs sm:text-sm text-tealbrand-900/80 space-y-2 leading-relaxed">
+                <p><strong>專案亮點與內容：</strong></p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>領導最多10人之倉管物流團隊，精準管理高價值太陽能原物料。</li>
+                    <li>建立每日/每週料帳對應機制，降低帳實不符機率至 minimal。</li>
+                    <li>擬定閒置物料與廢料處置流程，加速報廢與拍賣流程，大幅提升倉庫週轉率與空間彈性。</li>
+                </ul>
+            </div>
+            <div class="pt-3 border-t text-right">
+                <button onclick="closeModal('modal1')" class="px-4 py-2 bg-tealbrand-50 hover:bg-tealbrand-100 text-tealbrand-800 text-xs font-semibold rounded-lg">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Project Detail 2 -->
+    <div id="modal2" class="fixed inset-0 bg-tealbrand-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white max-w-lg w-full rounded-2xl p-6 space-y-4 relative shadow-2xl border border-tealbrand-100">
+            <button onclick="closeModal('modal2')" class="absolute top-4 right-4 text-tealbrand-700 hover:text-tealbrand-900">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold text-tealbrand-900">橡塑膠原物料控管與跨廠調撥</h3>
+            <p class="text-xs text-tealbrand-700 font-semibold">任職單位：安捷企業</p>
+            <div class="text-xs sm:text-sm text-tealbrand-900/80 space-y-2 leading-relaxed">
+                <p><strong>專案亮點與內容：</strong></p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>負責精細之訂購單開立與塑膠/橡膠原物料需求預估。</li>
+                    <li>協助多廠區/跨部門間的物料順暢調撥，確保關鍵備件及原物料不缺貨。</li>
+                    <li>標準化收料、備料與發料，大幅提昇作業流暢度。</li>
+                </ul>
+            </div>
+            <div class="pt-3 border-t text-right">
+                <button onclick="closeModal('modal2')" class="px-4 py-2 bg-tealbrand-50 hover:bg-tealbrand-100 text-tealbrand-800 text-xs font-semibold rounded-lg">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Project Detail 3 -->
+    <div id="modal3" class="fixed inset-0 bg-tealbrand-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white max-w-lg w-full rounded-2xl p-6 space-y-4 relative shadow-2xl border border-tealbrand-100">
+            <button onclick="closeModal('modal3')" class="absolute top-4 right-4 text-tealbrand-700 hover:text-tealbrand-900">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold text-tealbrand-900">大廠級電子零件備發料實務</h3>
+            <p class="text-xs text-tealbrand-700 font-semibold">任職單位：華碩電腦</p>
+            <div class="text-xs sm:text-sm text-tealbrand-900/80 space-y-2 leading-relaxed">
+                <p><strong>專案亮點與內容：</strong></p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>在千人規模高科技製造廠，執行電子零件進備發退報廢高強度作業。</li>
+                    <li>培養對大量品號（PN）的精準辨識力與細緻度。</li>
+                    <li>奠定後續20年嚴謹物流與料帳管理習慣。</li>
+                </ul>
+            </div>
+            <div class="pt-3 border-t text-right">
+                <button onclick="closeModal('modal3')" class="px-4 py-2 bg-tealbrand-50 hover:bg-tealbrand-100 text-tealbrand-800 text-xs font-semibold rounded-lg">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
