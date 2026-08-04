@@ -456,26 +456,71 @@
                         <p class="text-tealbrand-900/80 mt-1">TIPTOP ERP系統、Excel、Word、PowerPoint、Outlook</p>
                     </div>
 
-                    <!-- 方塊按鈕：Word 快捷鍵神助攻工具 -->
-                    <div class="border-t border-tealbrand-100 pt-3">
-                        <button onclick="openModal('modal-word-shortcuts')" class="w-full text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-3 z-10">
-                                <div class="w-11 h-11 rounded-lg bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-xl group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-file-word"></i>
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-bold text-sm sm:text-base text-white">Word 快捷鍵神助攻</span>
-                                        <span class="bg-sunyellow-500 text-tealbrand-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded">管理大師工具</span>
+                    <!-- 實用工具與專案連結區塊 (2x2 響應式網格，支援未來擴充) -->
+                    <div class="border-t border-tealbrand-100 pt-3 space-y-2.5">
+                        <div class="font-bold text-tealbrand-900 text-xs sm:text-sm flex items-center justify-between">
+                            <span><i class="fa-solid fa-rocket text-tealbrand-600 mr-1.5"></i> 實用工具與專案作品</span>
+                            <span class="text-[11px] bg-tealbrand-100 text-tealbrand-800 px-2 py-0.5 rounded-full font-medium">4 項資源</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <!-- 按鈕 1: Word 快捷鍵神助攻 (內建 Modal 工具) -->
+                            <button onclick="openModal('modal-word-shortcuts')" class="text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-3 rounded-xl shadow-xs hover:shadow transition-all group relative overflow-hidden flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 z-10 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-sm shrink-0 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-file-word"></i>
                                     </div>
-                                    <p class="text-xs text-tealbrand-100/80 mt-0.5">點擊開啟：物控行政必備 Word 快捷鍵速查工具</p>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs sm:text-sm text-white truncate">Word 快捷鍵工具</div>
+                                        <p class="text-[10px] text-tealbrand-100/80 truncate">物控行政必備速查</p>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-xs text-sunyellow-400 shrink-0 group-hover:translate-x-0.5 transition-transform"></i>
+                            </button>
+
+                            <!-- 按鈕 2: MagicBlock 專案 (外部 GitHub 連結) -->
+                            <a href="https://github.com/tienhsu114652/magicblock" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-900 to-darkslate hover:from-tealbrand-800 hover:to-tealbrand-900 text-white p-3 rounded-xl shadow-xs hover:shadow transition-all group relative overflow-hidden flex items-center justify-between gap-2 border border-tealbrand-700/50">
+                                <div class="flex items-center gap-2.5 z-10 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white text-sm shrink-0 group-hover:scale-110 transition-transform">
+                                        <i class="fa-brands fa-github"></i>
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs sm:text-sm text-white truncate flex items-center gap-1">
+                                            <span>MagicBlock</span>
+                                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-tealbrand-200"></i>
+                                        </div>
+                                        <p class="text-[10px] text-tealbrand-200/80 truncate">GitHub Repository</p>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-xs text-tealbrand-300 shrink-0 group-hover:translate-x-0.5 transition-transform"></i>
+                            </a>
+
+                            <!-- 按鈕 3: 預留欄位 1 (未來專案) -->
+                            <div class="bg-mintbg-50/70 border border-dashed border-tealbrand-200/80 text-tealbrand-700 p-3 rounded-xl flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-tealbrand-100/60 border border-tealbrand-200/50 flex items-center justify-center text-tealbrand-500 text-xs shrink-0">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-medium text-xs text-tealbrand-800/80 truncate">專案連結 03</div>
+                                        <p class="text-[10px] text-tealbrand-600/60 truncate">預留欄位 (即將推出)</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="z-10 shrink-0 bg-white/10 group-hover:bg-sunyellow-500 group-hover:text-tealbrand-950 text-white text-xs px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1">
-                                <span>開啟工具</span>
-                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+
+                            <!-- 按鈕 4: 預留欄位 2 (未來專案) -->
+                            <div class="bg-mintbg-50/70 border border-dashed border-tealbrand-200/80 text-tealbrand-700 p-3 rounded-xl flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-tealbrand-100/60 border border-tealbrand-200/50 flex items-center justify-center text-tealbrand-500 text-xs shrink-0">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-medium text-xs text-tealbrand-800/80 truncate">專案連結 04</div>
+                                        <p class="text-[10px] text-tealbrand-600/60 truncate">預留欄位 (即將推出)</p>
+                                    </div>
+                                </div>
                             </div>
-                        </button>
+                        </div>
                     </div>
 
                     <div class="border-t border-tealbrand-100 pt-2.5">
