@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>歡樂打地鼠 - Arcade Whack-a-Mole</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts for Cute Arcade Look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'M PLUS Rounded 1c', 'Fredoka', sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1c2637 100%);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overflow-x: hidden;
+    }
+
+    /* Custom Hammer Cursor for Game Area */
+    .hammer-cursor {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%23ffcc00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5 4 4"/><path d="M7 13l-4 4a2.12 2.12 0 0 0 3 3l4-4"/><path d="M11 9 5 15"/><path d="M12.5 7.5 17 3a1.5 1.5 0 0 1 2.12 0l1.88 1.88a1.5 1.5 0 0 1 0 2.12l-4.5 4.5"/><path d="M14 11l4 4"/></svg>') 12 12, auto;
+    }
+
+    /* 3D Depth Card effect */
+    .arcade-card {
+      box-shadow: 0 10px 0 #1b263b, 0 15px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .hole-mound {
+      background: radial-gradient(circle, #4a2810 0%, #2b1405 80%, #190a02 100%);
+      box-shadow: inset 0 12px 15px rgba(0,0,0,0.8), 0 6px 0 #120601;
+    }
+
+    .hole-rim {
+      border: 6px solid #633614;
+      border-top-color: #3d200a;
+    }
+
+    /* Floating Score Animation */
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
+      50% { transform: translate(-50%, -35px) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -60px) scale(1); }
+    }
+
+    .animate-float-score {
+      animation: floatUp 0.8s ease-out forwards;
+      pointer-events: none;
+    }
+
+    /* Shake Screen Effect */
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-8px, 6px); }
+      40% { transform: translate(8px, -6px); }
+      60% { transform: translate(-6px, -4px); }
+      80% { transform: translate(6px, 4px); }
+    }
+
+    .shake {
+      animation: screenShake 0.35s ease-in-out;
+    }
+
+    /* Mole Popup Transitions */
+    .mole-wrapper {
+      transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .mole-down {
+      transform: translateY(115%);
+    }
+
+    .mole-up {
+      transform: translateY(0%);
+    }
+
+    /* Pulse Glow */
+    .glow-gold {
+      filter: drop-shadow(0 0 10px #ffe600);
+    }
+    .glow-ice {
+      filter: drop-shadow(0 0 10px #00f0ff);
+    }
+    .glow-bomb {
+      filter: drop-shadow(0 0 12px #ff2200);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 text-white selection:bg-none">
+
+  <header class="w-full max-w-4xl flex justify-between items-center bg-slate-900/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl border-2 border-slate-700/60 shadow-xl mb-4">
+    <div class="flex items-center space-x-3">
+      <div class="bg-amber-500 text-slate-950 p-2 sm:p-2.5 rounded-xl font-black text-xl sm:text-2xl shadow-inner">
+        🔨
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-black text-amber-400 tracking-wider">歡樂打地鼠</h1>
+        <p class="text-[10px] sm:text-xs text-slate-400 font-semibold">SUPER WHACK-A-MOLE ARCADE</p>
+      </div>
+    </div>
+
+    <!-- Quick Audio & Help Buttons -->
+    <div class="flex items-center space-x-2">
+      <button id="soundToggleBtn" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 transition rounded-xl border border-slate-600 text-xs sm:text-sm font-bold flex items-center gap-1.5">
+        <span id="soundIcon">🔊</span>
+        <span id="soundText" class="hidden sm:inline">音效: 開</span>
+      </button>
+      <button id="helpBtn" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition rounded-xl text-xs sm:text-sm font-bold shadow">
+        ❓ 規則
+      </button>
+    </div>
+  </header>
+
+  <main id="mainContainer" class="w-full max-w-4xl flex flex-col items-center">
+    
+    <!-- HUD Stats Bar -->
+    <div class="w-full grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 mb-4">
+      
+      <!-- Score Box -->
+      <div class="bg-slate-900/90 border-2 border-amber-500/40 p-3 rounded-2xl flex flex-col items-center shadow-lg">
+        <span class="text-xs text-amber-400 font-bold tracking-wider uppercase">當前得分</span>
+        <span id="scoreDisplay" class="text-2xl sm:text-3xl font-black text-amber-300">0</span>
+      </div>
+
+      <!-- Time / Lives Box -->
+      <div class="bg-slate-900/90 border-2 border-cyan-500/40 p-3 rounded-2xl flex flex-col items-center shadow-lg">
+        <span id="timerLabel" class="text-xs text-cyan-400 font-bold tracking-wider uppercase">剩餘時間</span>
+        <span id="timerDisplay" class="text-2xl sm:text-3xl font-black text-cyan-300">30s</span>
+      </div>
+
+      <!-- Combo Multiplier Box -->
+      <div class="bg-slate-900/90 border-2 border-emerald-500/40 p-3 rounded-2xl flex flex-col items-center shadow-lg relative overflow-hidden">
+        <span class="text-xs text-emerald-400 font-bold tracking-wider uppercase">連擊 COMBO</span>
+        <div class="flex items-center gap-1">
+          <span id="comboDisplay" class="text-2xl sm:text-3xl font-black text-emerald-300">0</span>
+          <span id="multiplierBadge" class="text-xs bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded-md hidden">x1</span>
+        </div>
+      </div>
+
+      <!-- High Score Box -->
+      <div class="bg-slate-900/90 border-2 border-purple-500/40 p-3 rounded-2xl flex flex-col items-center shadow-lg">
+        <span class="text-xs text-purple-400 font-bold tracking-wider uppercase">最高紀錄</span>
+        <span id="highScoreDisplay" class="text-2xl sm:text-3xl font-black text-purple-300">0</span>
+      </div>
+    </div>
+
+    <!-- Mode Selector & Game Controls Bar -->
+    <div class="w-full bg-slate-900/70 backdrop-blur p-3 rounded-2xl border border-slate-700/50 mb-4 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-2">
+        <span class="text-xs font-bold text-slate-300">模式選擇:</span>
+        <select id="modeSelect" class="bg-slate-800 border border-slate-600 text-amber-300 font-bold text-xs sm:text-sm px-3 py-1.5 rounded-xl outline-none cursor-pointer">
+          <option value="classic">⏱️ 限時 30 秒</option>
+          <option value="frenzy">⚡ 狂暴 60 秒</option>
+          <option value="survival">❤️ 生存 3 顆心</option>
+        </select>
+      </div>
+
+      <div class="flex space-x-2">
+        <button id="startBtn" class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 active:scale-95 text-slate-950 font-black text-sm sm:text-base rounded-xl shadow-lg transition tracking-wider border-b-4 border-green-800">
+          ▶️ 開始遊戲
+        </button>
+      </div>
+    </div>
+
+    <div id="gamePlayfield" class="relative w-full aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-b from-emerald-800 via-green-800 to-emerald-900 rounded-3xl p-3 sm:p-6 border-4 border-emerald-600 shadow-2xl arcade-card overflow-hidden hammer-cursor">
+      
+      <!-- Grass texture overlay -->
+      <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#a3e635_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+
+      <!-- Floating particle / text layer -->
+      <div id="floatingLayer" class="absolute inset-0 pointer-events-none z-30"></div>
+
+      <!-- 3x3 Grid Container -->
+      <div class="relative z-10 w-full h-full grid grid-cols-3 grid-rows-3 gap-2 sm:gap-4">
+        
+        <!-- Hole 0 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="0"></div>
+        </div>
+
+        <!-- Hole 1 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="1"></div>
+        </div>
+
+        <!-- Hole 2 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="2"></div>
+        </div>
+
+        <!-- Hole 3 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="3"></div>
+        </div>
+
+        <!-- Hole 4 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="4"></div>
+        </div>
+
+        <!-- Hole 5 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="5"></div>
+        </div>
+
+        <!-- Hole 6 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="6"></div>
+        </div>
+
+        <!-- Hole 7 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="7"></div>
+        </div>
+
+        <!-- Hole 8 -->
+        <div class="hole-container relative flex items-end justify-center overflow-hidden rounded-full">
+          <div class="hole-mound absolute bottom-0 w-full h-3/4 rounded-full border-b-4 border-amber-950"></div>
+          <div class="hole-rim absolute bottom-0 w-full h-1/2 rounded-full pointer-events-none z-20"></div>
+          <div class="mole-wrapper mole-down absolute bottom-3 z-10 w-3/4 h-3/4 flex items-center justify-center cursor-pointer" data-index="8"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="w-full mt-4 bg-slate-900/60 p-3 rounded-2xl border border-slate-700/40 flex flex-wrap justify-around gap-2 text-xs text-slate-300">
+      <div class="flex items-center space-x-1.5">
+        <span class="text-base">🐹</span>
+        <span>普通地鼠 (+100)</span>
+      </div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-base">👑</span>
+        <span class="text-amber-300 font-bold">黃金地鼠 (+300)</span>
+      </div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-base">🪖</span>
+        <span class="text-sky-300 font-bold">鋼盔地鼠 (需敲2下/200分)</span>
+      </div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-base">💣</span>
+        <span class="text-red-400 font-bold">炸彈 (-200/扣心)</span>
+      </div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-base">❄️</span>
+        <span class="text-cyan-300 font-bold">冰凍 (減速5秒)</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-amber-500/60 w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h2 class="text-xl font-black text-amber-400 flex items-center gap-2">
+          📖 遊戲規則說明
+        </h2>
+        <button id="closeHelpBtn" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-slate-200 leading-relaxed">
+        <p>1. 點擊出洞的地鼠進行敲擊！連續命中可累積 <strong class="text-emerald-400">連擊 (Combo)</strong> 提升得分倍率。</p>
+        <p>2. 注意不同種類的地鼠：</p>
+        <ul class="list-disc list-inside space-y-1 pl-2 text-slate-300">
+          <li><strong class="text-amber-300">黃金地鼠</strong>：速度快、高得分。</li>
+          <li><strong class="text-sky-300">鋼盔地鼠</strong>：第1下敲掉頭盔，第2下徹底打倒！</li>
+          <li><strong class="text-cyan-300">冰凍地鼠</strong>：擊中後時間與地鼠減速 5 秒。</li>
+          <li><strong class="text-red-400">炸彈地鼠</strong>：切勿敲擊！會扣分並打斷連擊（生存模式下扣 1 顆心）。</li>
+        </ul>
+        <p>3. 支援桌面滑鼠與手機觸控操作，祝您突破最高紀錄！</p>
+      </div>
+      <button id="confirmHelpBtn" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl transition">
+        明白，準備開打！
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-amber-500/80 w-full max-w-md p-6 rounded-3xl shadow-2xl text-center space-y-5">
+      <div class="text-4xl">🏆</div>
+      <h2 class="text-2xl sm:text-3xl font-black text-amber-400">遊戲結束 GAME OVER</h2>
+      
+      <!-- Stats Board -->
+      <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-3">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-400">本次得分:</span>
+          <span id="finalScore" class="text-2xl font-black text-amber-300">0</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-400">最高連擊:</span>
+          <span id="finalCombo" class="text-lg font-bold text-emerald-400">0</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-400">敲擊命中率:</span>
+          <span id="finalAccuracy" class="text-lg font-bold text-cyan-400">0%</span>
+        </div>
+        <div id="newHighNotice" class="hidden bg-amber-500/20 border border-amber-500 text-amber-300 text-xs py-1.5 rounded-lg font-bold">
+          🎉 恭喜刷新最高紀錄！
+        </div>
+      </div>
+
+      <button id="restartGameBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 active:scale-95 text-slate-950 font-black text-base rounded-2xl shadow-xl transition">
+        🔄 再玩一次
+      </button>
+    </div>
+  </div>
+
+  <script>
+    class WebAudioSoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Whack Thump Sound
+      playWhack() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(280, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.12);
+
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
+      }
+
+      // Squeak High Score / Golden Mole Hit
+      playGoldenHit() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+
+          const start = this.ctx.currentTime + i * 0.04;
+          gain.gain.setValueAtTime(0.2, start);
+          gain.gain.exponentialRampToValueAtTime(0.01, start + 0.08);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(start);
+          osc.stop(start + 0.08);
+        });
+      }
+
+      // Helmet Metal Clang
+      playClang() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.1);
+
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      // Bomb Explosion Sound
+      playExplosion() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+      }
+
+      // Ice Slow Chime
+      playFreeze() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(600, this.ctx.currentTime + 0.25);
+
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.25);
+      }
+
+      // Game Over Fanfare
+      playGameOver() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [400, 350, 300, 250];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+
+          const start = this.ctx.currentTime + idx * 0.12;
+          gain.gain.setValueAtTime(0.3, start);
+          gain.gain.exponentialRampToValueAtTime(0.01, start + 0.15);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(start);
+          osc.stop(start + 0.15);
+        });
+      }
+    }
+
+    const sound = new WebAudioSoundEngine();
+
+    function getMoleSVG(type, state = 'normal') {
+      // type: 'normal', 'gold', 'helmet', 'bomb', 'freeze'
+      // state: 'normal', 'hit', 'cracked'
+
+      let skinColor = '#8B4513';
+      let noseColor = '#FF69B4';
+      let extraHat = '';
+      let eyes = `
+        <circle cx="38" cy="42" r="5" fill="#000"/>
+        <circle cx="62" cy="42" r="5" fill="#000"/>
+        <circle cx="40" cy="40" r="1.5" fill="#fff"/>
+        <circle cx="64" cy="40" r="1.5" fill="#fff"/>
+      `;
+
+      if (state === 'hit') {
+        eyes = `
+          <path d="M 33 38 L 43 46 M 43 38 L 33 46" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 57 38 L 67 46 M 67 38 L 57 46" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+        `;
+      }
+
+      if (type === 'gold') {
+        skinColor = '#FFD700';
+        noseColor = '#FF4500';
+        extraHat = `<path d="M 35 22 L 42 10 L 50 20 L 58 10 L 65 22 Z" fill="#FFA500" stroke="#FFF" stroke-width="1.5"/>`;
+      } else if (type === 'helmet') {
+        skinColor = '#A0522D';
+        if (state === 'normal') {
+          extraHat = `
+            <path d="M 22 28 C 22 10, 78 10, 78 28 Z" fill="#718096" stroke="#2D3748" stroke-width="2"/>
+            <rect x="18" y="26" width="64" h="6" rx="3" fill="#4A5568"/>
+          `;
+        } else if (state === 'cracked') {
+          extraHat = `
+            <path d="M 22 28 C 22 10, 78 10, 78 28 Z" fill="#718096" stroke="#2D3748" stroke-width="2"/>
+            <path d="M 45 12 L 52 22 L 48 28" stroke="#1A202C" stroke-width="2" fill="none"/>
+            <rect x="18" y="26" width="64" h="6" rx="3" fill="#4A5568"/>
+          `;
+        }
+      } else if (type === 'bomb') {
+        skinColor = '#333333';
+        noseColor = '#FF0000';
+        extraHat = `
+          <circle cx="50" cy="18" r="10" fill="#111" stroke="#FF4500" stroke-width="2"/>
+          <path d="M 50 8 Q 55 2 60 5" stroke="#FFA500" stroke-width="2" fill="none"/>
+          <circle cx="60" cy="5" r="2.5" fill="#FF0000" class="animate-ping"/>
+        `;
+      } else if (type === 'freeze') {
+        skinColor = '#00BFFF';
+        noseColor = '#1E90FF';
+        extraHat = `
+          <path d="M 50 10 L 50 24 M 43 17 L 57 17 M 45 12 L 55 22 M 45 22 L 55 12" stroke="#FFF" stroke-width="2"/>
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md select-none">
+          <!-- Body -->
+          <ellipse cx="50" cy="65" rx="36" ry="32" fill="${skinColor}"/>
+          <!-- Snout -->
+          <ellipse cx="50" cy="52" rx="18" ry="12" fill="#FFE4C4"/>
+          <ellipse cx="50" cy="48" rx="7" ry="5" fill="${noseColor}"/>
+          <!-- Eyes -->
+          ${eyes}
+          <!-- Cheeks -->
+          <circle cx="30" cy="52" r="5" fill="#FFB6C1" opacity="0.6"/>
+          <circle cx="70" cy="52" r="5" fill="#FFB6C1" opacity="0.6"/>
+          <!-- Extra Decor / Hat -->
+          ${extraHat}
+        </svg>
+      `;
+    }
+
+    const moleWrappers = document.querySelectorAll('.mole-wrapper');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerLabel = document.getElementById('timerLabel');
+    const comboDisplay = document.getElementById('comboDisplay');
+    const multiplierBadge = document.getElementById('multiplierBadge');
+    const highScoreDisplay = document.getElementById('highScoreDisplay');
+    const startBtn = document.getElementById('startBtn');
+    const modeSelect = document.getElementById('modeSelect');
+    const gamePlayfield = document.getElementById('gamePlayfield');
+    const floatingLayer = document.getElementById('floatingLayer');
+
+    // Modals & Controls
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeHelpBtn = document.getElementById('closeHelpBtn');
+    const confirmHelpBtn = document.getElementById('confirmHelpBtn');
+
+    const gameOverModal = document.getElementById('gameOverModal');
+    const restartGameBtn = document.getElementById('restartGameBtn');
+    const finalScore = document.getElementById('finalScore');
+    const finalCombo = document.getElementById('finalCombo');
+    const finalAccuracy = document.getElementById('finalAccuracy');
+    const newHighNotice = document.getElementById('newHighNotice');
+
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
+    const soundText = document.getElementById('soundText');
+
+    // Game Variables
+    let isPlaying = false;
+    let score = 0;
+    let combo = 0;
+    let maxCombo = 0;
+    let totalClicks = 0;
+    let totalHits = 0;
+    let timer = 30;
+    let lives = 3;
+    let gameMode = 'classic'; // 'classic', 'frenzy', 'survival'
+    let timerInterval = null;
+    let moleLoopTimeout = null;
+    let activeMoles = new Array(9).fill(null); // stores { type, hp, maxHp, timerId }
+    let isFrozen = false;
+    let freezeTimer = null;
+
+    // Local Storage High Score
+    let highScore = parseInt(localStorage.getItem('whack_mole_hi_score') || '0', 10);
+    highScoreDisplay.innerText = highScore;
+
+    function updateScore(delta) {
+      score = Math.max(0, score + delta);
+      scoreDisplay.innerText = score;
+
+      if (score > highScore) {
+        highScore = score;
+        highScoreDisplay.innerText = highScore;
+        localStorage.setItem('whack_mole_hi_score', highScore);
+      }
+    }
+
+    function addCombo() {
+      combo++;
+      if (combo > maxCombo) maxCombo = combo;
+      comboDisplay.innerText = combo;
+
+      let mult = 1;
+      if (combo >= 20) mult = 5;
+      else if (combo >= 15) mult = 4;
+      else if (combo >= 10) mult = 3;
+      else if (combo >= 5) mult = 2;
+
+      if (mult > 1) {
+        multiplierBadge.innerText = `x${mult}`;
+        multiplierBadge.classList.remove('hidden');
+      } else {
+        multiplierBadge.classList.add('hidden');
+      }
+      return mult;
+    }
+
+    function resetCombo() {
+      combo = 0;
+      comboDisplay.innerText = 0;
+      multiplierBadge.classList.add('hidden');
+    }
+
+    function spawnMole() {
+      if (!isPlaying) return;
+
+      // Select empty holes
+      const emptyHoles = [];
+      activeMoles.forEach((m, idx) => {
+        if (!m) emptyHoles.push(idx);
+      });
+
+      if (emptyHoles.length > 0) {
+        const holeIdx = emptyHoles[Math.floor(Math.random() * emptyHoles.length)];
+        
+        // Random Mole Type Probabilities
+        const rand = Math.random();
+        let moleType = 'normal';
+        let hp = 1;
+
+        if (rand < 0.12) {
+          moleType = 'gold'; // 12%
+        } else if (rand < 0.28) {
+          moleType = 'helmet'; // 16%
+          hp = 2;
+        } else if (rand < 0.42) {
+          moleType = 'bomb'; // 14%
+        } else if (rand < 0.52) {
+          moleType = 'freeze'; // 10%
+        }
+
+        const el = moleWrappers[holeIdx];
+        el.innerHTML = getMoleSVG(moleType, 'normal');
+        el.classList.remove('mole-down');
+        el.classList.add('mole-up');
+
+        // Apply glow style if special
+        if (moleType === 'gold') el.classList.add('glow-gold');
+        if (moleType === 'freeze') el.classList.add('glow-ice');
+        if (moleType === 'bomb') el.classList.add('glow-bomb');
+
+        // Up duration based on speed/freeze
+        let upDuration = isFrozen ? 2200 : (Math.max(600, 1400 - score * 0.5));
+        if (moleType === 'gold') upDuration *= 0.7; // Gold moves faster
+
+        const popTimeout = setTimeout(() => {
+          hideMole(holeIdx);
+        }, upDuration);
+
+        activeMoles[holeIdx] = {
+          type: moleType,
+          hp: hp,
+          maxHp: hp,
+          timeout: popTimeout
+        };
+      }
+
+      // Schedule next mole spawn
+      let nextInterval = isFrozen ? 1200 : Math.max(350, 900 - score * 0.4);
+      moleLoopTimeout = setTimeout(spawnMole, nextInterval);
+    }
+
+    function hideMole(index) {
+      const el = moleWrappers[index];
+      if (!el) return;
+
+      el.classList.remove('mole-up', 'glow-gold', 'glow-ice', 'glow-bomb');
+      el.classList.add('mole-down');
+
+      if (activeMoles[index]) {
+        clearTimeout(activeMoles[index].timeout);
+        activeMoles[index] = null;
+      }
+    }
+
+    function showFloatingText(x, y, text, colorClass = 'text-amber-300') {
+      const el = document.createElement('div');
+      el.className = `absolute font-black text-xl sm:text-2xl animate-float-score ${colorClass}`;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.innerText = text;
+      floatingLayer.appendChild(el);
+
+      setTimeout(() => el.remove(), 800);
+    }
+
+    function handleWhack(e, index) {
+      if (!isPlaying) return;
+      totalClicks++;
+
+      const mole = activeMoles[index];
+      if (!mole) {
+        resetCombo();
+        return;
+      }
+
+      totalHits++;
+      const el = moleWrappers[index];
+      const rect = el.getBoundingClientRect();
+      const parentRect = gamePlayfield.getBoundingClientRect();
+      const clickX = rect.left - parentRect.left + rect.width / 2;
+      const clickY = rect.top - parentRect.top + 10;
+
+      // Handle hit based on type
+      if (mole.type === 'bomb') {
+        sound.playExplosion();
+        gamePlayfield.classList.add('shake');
+        setTimeout(() => gamePlayfield.classList.remove('shake'), 400);
+
+        resetCombo();
+        if (gameMode === 'survival') {
+          lives--;
+          updateLivesDisplay();
+          showFloatingText(clickX, clickY, '💣 扣心!', 'text-red-500');
+          if (lives <= 0) endGame();
+        } else {
+          updateScore(-200);
+          showFloatingText(clickX, clickY, '-200 💣', 'text-red-500');
+        }
+        hideMole(index);
+        return;
+      }
+
+      // Helmet mole needs 2 hits
+      if (mole.type === 'helmet' && mole.hp > 1) {
+        mole.hp--;
+        sound.playClang();
+        el.innerHTML = getMoleSVG('helmet', 'cracked');
+        showFloatingText(clickX, clickY, '🔨 破甲!', 'text-sky-300');
+        return;
+      }
+
+      // Defeated Mole!
+      const mult = addCombo();
+      let pts = 100;
+      if (mole.type === 'gold') {
+        pts = 300;
+        sound.playGoldenHit();
+      } else if (mole.type === 'helmet') {
+        pts = 200;
+        sound.playWhack();
+      } else if (mole.type === 'freeze') {
+        pts = 150;
+        sound.playFreeze();
+        triggerFreeze();
+      } else {
+        sound.playWhack();
+      }
+
+      const totalPts = pts * mult;
+      updateScore(totalPts);
+
+      // Hit facial animation
+      el.innerHTML = getMoleSVG(mole.type, 'hit');
+      showFloatingText(clickX, clickY, `+${totalPts}${mult > 1 ? ' (x' + mult + ')' : ''}`, 'text-amber-300');
+
+      setTimeout(() => hideMole(index), 150);
+    }
+
+    function triggerFreeze() {
+      isFrozen = true;
+      gamePlayfield.classList.add('border-cyan-400');
+      if (freezeTimer) clearTimeout(freezeTimer);
+      freezeTimer = setTimeout(() => {
+        isFrozen = false;
+        gamePlayfield.classList.remove('border-cyan-400');
+      }, 5000);
+    }
+
+    function updateLivesDisplay() {
+      let hearts = '';
+      for (let i = 0; i < lives; i++) hearts += '❤️';
+      timerDisplay.innerText = hearts || '💀';
+    }
+
+    function startGame() {
+      isPlaying = true;
+      score = 0;
+      combo = 0;
+      maxCombo = 0;
+      totalClicks = 0;
+      totalHits = 0;
+      isFrozen = false;
+      scoreDisplay.innerText = '0';
+      comboDisplay.innerText = '0';
+      multiplierBadge.classList.add('hidden');
+
+      gameMode = modeSelect.value;
+      if (gameMode === 'classic') {
+        timer = 30;
+        timerLabel.innerText = '剩餘時間';
+        timerDisplay.innerText = `${timer}s`;
+      } else if (gameMode === 'frenzy') {
+        timer = 60;
+        timerLabel.innerText = '剩餘時間';
+        timerDisplay.innerText = `${timer}s`;
+      } else if (gameMode === 'survival') {
+        lives = 3;
+        timerLabel.innerText = '生命數';
+        updateLivesDisplay();
+      }
+
+      // Reset all moles
+      activeMoles.forEach((_, idx) => hideMole(idx));
+
+      // Start Loops
+      clearInterval(timerInterval);
+      clearTimeout(moleLoopTimeout);
+
+      if (gameMode !== 'survival') {
+        timerInterval = setInterval(() => {
+          if (!isFrozen) {
+            timer--;
+            timerDisplay.innerText = `${timer}s`;
+            if (timer <= 0) endGame();
+          }
+        }, 1000);
+      }
+
+      spawnMole();
+      startBtn.innerText = '🔄 重新開始';
+    }
+
+    function endGame() {
+      isPlaying = false;
+      clearInterval(timerInterval);
+      clearTimeout(moleLoopTimeout);
+      if (freezeTimer) clearTimeout(freezeTimer);
+
+      activeMoles.forEach((_, idx) => hideMole(idx));
+      sound.playGameOver();
+
+      // Accuracy calc
+      const acc = totalClicks > 0 ? Math.round((totalHits / totalClicks) * 100) : 0;
+
+      finalScore.innerText = score;
+      finalCombo.innerText = `${maxCombo} 連擊`;
+      finalAccuracy.innerText = `${acc}%`;
+
+      if (score >= highScore && score > 0) {
+        newHighNotice.classList.remove('hidden');
+      } else {
+        newHighNotice.classList.add('hidden');
+      }
+
+      gameOverModal.classList.remove('hidden');
+    }
+
+    moleWrappers.forEach((el) => {
+      const idx = parseInt(el.getAttribute('data-index'), 10);
+      
+      // Support Touch & Click without double triggering
+      const triggerWhack = (e) => {
+        e.preventDefault();
+        sound.init();
+        handleWhack(e, idx);
+      };
+
+      el.addEventListener('touchstart', triggerWhack, { passive: false });
+      el.addEventListener('mousedown', triggerWhack);
+    });
+
+    startBtn.addEventListener('click', () => {
+      sound.init();
+      startGame();
+    });
+
+    restartGameBtn.addEventListener('click', () => {
+      gameOverModal.classList.add('hidden');
+      startGame();
+    });
+
+    // Sound toggle
+    soundToggleBtn.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      soundIcon.innerText = sound.enabled ? '🔊' : '🔇';
+      soundText.innerText = sound.enabled ? '音效: 開' : '音效: 關';
+    });
+
+    // Rules Modal Toggle
+    helpBtn.addEventListener('click', () => helpModal.classList.remove('hidden'));
+    closeHelpBtn.addEventListener('click', () => helpModal.classList.add('hidden'));
+    confirmHelpBtn.addEventListener('click', () => helpModal.classList.add('hidden'));
+
+    // Responsive Canvas Click tracking for missed hits
+    gamePlayfield.addEventListener('mousedown', (e) => {
+      if (isPlaying && !e.target.closest('.mole-wrapper')) {
+        totalClicks++;
+        resetCombo();
+      }
+    });
+  </script>
+</body>
+</html>
