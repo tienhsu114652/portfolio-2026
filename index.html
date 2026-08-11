@@ -104,7 +104,7 @@
                 <a href="#skills" class="hover:text-tealbrand-600 transition">專業技能</a>
                 <a href="#portfolio" class="hover:text-tealbrand-600 transition">歷練專案</a>
                 <a href="#experience" class="hover:text-tealbrand-600 transition">工作經歷</a>
-                <a href="#autobiography" class="hover:text-tealbrand-600 transition">自傳</a>
+                <a href="#tools" class="hover:text-tealbrand-600 transition">實用工具與專案</a>
                 <a href="#contact" class="hover:text-tealbrand-600 transition">聯絡方式</a>
             </div>
         </div>
@@ -114,7 +114,7 @@
             <a href="#skills" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">專業技能</a>
             <a href="#portfolio" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">歷練專案</a>
             <a href="#experience" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">工作經歷</a>
-            <a href="#autobiography" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">自傳</a>
+            <a href="#tools" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">實用工具與專案</a>
             <a href="#contact" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">聯絡方式</a>
         </div>
     </nav>
@@ -433,143 +433,160 @@
 
     <!-- Licenses, Skills & Education Grid -->
     <section class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Licenses & Tools -->
-            <div class="bg-card-custom p-6 rounded-2xl shadow-sm space-y-4">
+        <div class="bg-card-custom p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-tealbrand-100 pb-4">
                 <h3 class="font-bold text-tealbrand-900 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-certificate text-tealbrand-600"></i> 證照與電腦技能
+                    <i class="fa-solid fa-certificate text-tealbrand-600"></i> 證照與專業認證
                 </h3>
-                <div class="space-y-3 text-xs sm:text-sm">
-                    <div>
-                        <div class="font-bold text-tealbrand-900">專業證照</div>
-                        <div class="flex flex-wrap gap-2 mt-1.5">
-                            <span class="bg-tealbrand-100 text-tealbrand-900 border border-tealbrand-200 px-2.5 py-1 rounded-lg text-xs font-medium">
-                                <i class="fa-solid fa-certificate text-tealbrand-600 mr-1"></i> 堆高機操作技術士 (單一級)
-                            </span>
-                            <span class="bg-tealbrand-100 text-tealbrand-900 border border-tealbrand-200 px-2.5 py-1 rounded-lg text-xs font-medium">
-                                <i class="fa-solid fa-triangle-exclamation text-sunyellow-600 mr-1"></i> 危險物品運送人員證明
-                            </span>
-                        </div>
-                    </div>
-                    <div class="border-t border-tealbrand-100 pt-2.5">
-                        <div class="font-bold text-tealbrand-900">電腦與系統軟體</div>
-                        <p class="text-tealbrand-900/80 mt-1">TIPTOP ERP系統、Excel、Word、PowerPoint、Outlook</p>
-                    </div>
+                <span class="text-xs font-normal bg-tealbrand-50 text-tealbrand-700 px-2.5 py-1 rounded-full border border-tealbrand-200">Accredible 數位驗證 + 國家級執照</span>
+            </div>
 
-                    <!-- 實用工具與專案連結區塊 (2x2 響應式網格，支援未來擴充) -->
-                    <div class="border-t border-tealbrand-100 pt-3 space-y-2.5">
-                        <div class="font-bold text-tealbrand-900 text-xs sm:text-sm flex items-center justify-between">
-                            <span><i class="fa-solid fa-rocket text-tealbrand-600 mr-1.5"></i> 實用工具與專案作品</span>
-                            <span class="text-[11px] bg-tealbrand-100 text-tealbrand-800 px-2 py-0.5 rounded-full font-medium">4 項資源</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <!-- 按鈕 1: Word 快捷鍵神助攻 (內建 Modal 工具) -->
-                            <button onclick="openModal('modal-word-shortcuts')" class="text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-3 rounded-xl shadow-xs hover:shadow transition-all group relative overflow-hidden flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-2.5 z-10 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-sm shrink-0 group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-file-word"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs sm:text-sm text-white truncate">Word 快捷鍵工具</div>
-                                        <p class="text-[10px] text-tealbrand-100/80 truncate">物控行政必備速查</p>
-                                    </div>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-xs text-sunyellow-400 shrink-0 group-hover:translate-x-0.5 transition-transform"></i>
-                            </button>
-
-                            <!-- 按鈕 2: MagicBlock 專案 (外部 GitHub 連結) -->
-                            <a href="https://github.com/tienhsu114652/magicblock" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-900 to-darkslate hover:from-tealbrand-800 hover:to-tealbrand-900 text-white p-3 rounded-xl shadow-xs hover:shadow transition-all group relative overflow-hidden flex items-center justify-between gap-2 border border-tealbrand-700/50">
-                                <div class="flex items-center gap-2.5 z-10 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white text-sm shrink-0 group-hover:scale-110 transition-transform">
-                                        <i class="fa-brands fa-github"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs sm:text-sm text-white truncate flex items-center gap-1">
-                                            <span>MagicBlock</span>
-                                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-tealbrand-200"></i>
-                                        </div>
-                                        <p class="text-[10px] text-tealbrand-200/80 truncate">GitHub Repository</p>
-                                    </div>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-xs text-tealbrand-300 shrink-0 group-hover:translate-x-0.5 transition-transform"></i>
-                            </a>
-
-                            <!-- 按鈕 3: 預留欄位 1 (未來專案) -->
-                            <div class="bg-mintbg-50/70 border border-dashed border-tealbrand-200/80 text-tealbrand-700 p-3 rounded-xl flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg bg-tealbrand-100/60 border border-tealbrand-200/50 flex items-center justify-center text-tealbrand-500 text-xs shrink-0">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div class="font-medium text-xs text-tealbrand-800/80 truncate">專案連結 03</div>
-                                        <p class="text-[10px] text-tealbrand-600/60 truncate">預留欄位 (即將推出)</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 按鈕 4: 預留欄位 2 (未來專案) -->
-                            <div class="bg-mintbg-50/70 border border-dashed border-tealbrand-200/80 text-tealbrand-700 p-3 rounded-xl flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg bg-tealbrand-100/60 border border-tealbrand-200/50 flex items-center justify-center text-tealbrand-500 text-xs shrink-0">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div class="font-medium text-xs text-tealbrand-800/80 truncate">專案連結 04</div>
-                                        <p class="text-[10px] text-tealbrand-600/60 truncate">預留欄位 (即將推出)</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-tealbrand-100 pt-2.5">
-                        <div class="font-bold text-tealbrand-900">打字能力與語言</div>
-                        <p class="text-tealbrand-900/80 mt-1">中文打字 30字/分 (注音)｜英文打字 60字/分｜英文聽說讀寫略通</p>
-                    </div>
+            <!-- 國家執照與技能簡覽 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+                <div class="bg-mintbg-50/70 p-3.5 rounded-xl border border-tealbrand-200/80">
+                    <div class="font-bold text-tealbrand-900 mb-1.5"><i class="fa-solid fa-certificate text-tealbrand-600 mr-1"></i> 國家級專業執照</div>
+                    <p class="text-tealbrand-800 text-xs leading-relaxed">堆高機操作技術士 (單一級)<br>危險物品運送人員證明</p>
+                </div>
+                <div class="bg-mintbg-50/70 p-3.5 rounded-xl border border-tealbrand-200/80">
+                    <div class="font-bold text-tealbrand-900 mb-1.5"><i class="fa-solid fa-desktop text-tealbrand-600 mr-1"></i> 電腦與系統軟體</div>
+                    <p class="text-tealbrand-800 text-xs leading-relaxed">TIPTOP ERP系統、Excel、Word、PowerPoint、Outlook</p>
+                </div>
+                <div class="bg-mintbg-50/70 p-3.5 rounded-xl border border-tealbrand-200/80">
+                    <div class="font-bold text-tealbrand-900 mb-1.5"><i class="fa-solid fa-keyboard text-tealbrand-600 mr-1"></i> 打字能力與語言</div>
+                    <p class="text-tealbrand-800 text-xs leading-relaxed">中文 30字/分｜英文 60字/分<br>英文聽說讀寫略通</p>
                 </div>
             </div>
 
-            <!-- Education & Drivers License -->
-            <div class="bg-card-custom p-6 rounded-2xl shadow-sm space-y-4">
-                <h3 class="font-bold text-tealbrand-900 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-tealbrand-600"></i> 學歷與交通條件
-                </h3>
-                <div class="space-y-3 text-xs sm:text-sm">
-                    <div>
-                        <div class="font-bold text-tealbrand-900">最高學歷</div>
-                        <p class="text-tealbrand-950 font-medium mt-1">國立桃園高級中學（普通科）</p>
-                        <p class="text-tealbrand-700 text-xs">1984/09 ～ 1987/06 畢業</p>
+            <!-- 3 Accredible Certificates Horizontal Row (3 Columns) -->
+            <div class="border-t border-tealbrand-100 pt-5">
+                <div class="font-bold text-tealbrand-900 mb-4 text-sm sm:text-base flex items-center justify-between">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-award text-tealbrand-600"></i>
+                        <span>專業數位認證證書（3項）</span>
+                    </span>
+                    <span class="text-xs font-normal text-tealbrand-600">水平並排模式</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Certificate 1 -->
+                    <div class="bg-mintbg-50/70 border border-tealbrand-200/80 rounded-xl p-4 hover:border-tealbrand-400 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="w-full overflow-hidden rounded-lg border border-tealbrand-200 bg-white shadow-xs mb-3">
+                                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/191071122" alt="生成式 AI 職場生產力與自動化應用專業認證" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/600x420/14b8a6/ffffff?text=Digital+Certificate+191071122';">
+                            </div>
+                            <h4 class="font-bold text-tealbrand-900 text-sm flex items-start gap-1.5 leading-snug">
+                                <i class="fa-solid fa-circle-check text-tealbrand-600 text-xs shrink-0 mt-0.5"></i>
+                                <span>生成式 AI 職場生產力與自動化應用專業認證</span>
+                            </h4>
+                            <p class="text-xs text-tealbrand-900/80 leading-relaxed mt-2.5">
+                                本認證肯定了將生成式 AI 與自動化工具導入日常職場與資材物控流程的專業能力。課程涵蓋 Prompt 提示工程、AI 輔助數據分析、自動化表單處理與智慧文字生成。透過此認證，能有效運用 AI 升級傳統倉儲物料數據檢視、快速撰寫報告與異常分析，將重複性行政作業大幅精簡，展現跨領域數位轉型與實務應用價值。
+                            </p>
+                        </div>
                     </div>
-                    <div class="border-t border-tealbrand-100 pt-2.5">
-                        <div class="font-bold text-tealbrand-900">駕照與交通工具</div>
-                        <p class="text-tealbrand-900/80 mt-1">持有普通重型機車、自排小型車駕照，並備有自用車輛可供通勤。</p>
+
+                    <!-- Certificate 2 -->
+                    <div class="bg-mintbg-50/70 border border-tealbrand-200/80 rounded-xl p-4 hover:border-tealbrand-400 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="w-full overflow-hidden rounded-lg border border-tealbrand-200 bg-white shadow-xs mb-3">
+                                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/191066516?key=c49172a0df2da4caa5145a292180ea08481d8d6da2c857b8fbac2087daefc380" alt="智慧倉儲與現代化供應鏈數據管理證照" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/600x420/14b8a6/ffffff?text=Digital+Certificate+191066516';">
+                            </div>
+                            <h4 class="font-bold text-tealbrand-900 text-sm flex items-start gap-1.5 leading-snug">
+                                <i class="fa-solid fa-circle-check text-tealbrand-600 text-xs shrink-0 mt-0.5"></i>
+                                <span>智慧倉儲與現代化供應鏈數據管理證照</span>
+                            </h4>
+                            <p class="text-xs text-tealbrand-900/80 leading-relaxed mt-2.5">
+                                本證照專注於現代化智慧倉儲架構、庫存數據分析及動態物料控制技術。內容涵蓋 ERP/TIPTOP 數據整合實務、庫存週轉率最佳化模型、ABC 分類法升級與品號追溯邏輯。取得此認證代表具備結合 20 年實務經驗與現代化數據分析工具的能力，能精準掌握料帳一致性、預測物料需求並極小化呆滯廢料風險。
+                            </p>
+                        </div>
                     </div>
-                    <div class="border-t border-tealbrand-100 pt-2.5">
-                        <div class="font-bold text-tealbrand-900">兵役狀況</div>
-                        <p class="text-tealbrand-900/80 mt-1">役畢</p>
+
+                    <!-- Certificate 3 -->
+                    <div class="bg-mintbg-50/70 border border-tealbrand-200/80 rounded-xl p-4 hover:border-tealbrand-400 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="w-full overflow-hidden rounded-lg border border-tealbrand-200 bg-white shadow-xs mb-3">
+                                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/191055638" alt="數位化流程優化與高效專案管理認證" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/600x420/14b8a6/ffffff?text=Digital+Certificate+191055638';">
+                            </div>
+                            <h4 class="font-bold text-tealbrand-900 text-sm flex items-start gap-1.5 leading-snug">
+                                <i class="fa-solid fa-circle-check text-tealbrand-600 text-xs shrink-0 mt-0.5"></i>
+                                <span>數位化流程優化與高效專案管理認證</span>
+                            </h4>
+                            <p class="text-xs text-tealbrand-900/80 leading-relaxed mt-2.5">
+                                本認證著重於企業流程梳理、精益管理（Lean Management）及數位專案推動能力。涵蓋發料備料流程優化、跨部門溝通協調、跨廠區調撥排程規劃與品質異常控制。具備此認證意味著能以敏捷且嚴謹的專案管理思維，帶領倉管物控團隊建立標準作業程序（SOP），持續提升廠區營運效率與整體物料流轉效益。
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Autobiography Section -->
-    <section id="autobiography" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+    <!-- Practical Tools & Portfolio Section -->
+    <section id="tools" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
         <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm border border-tealbrand-100">
-            <h2 class="text-xl font-bold text-tealbrand-900 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-book-open text-tealbrand-600"></i> 自傳
-            </h2>
-            <div class="text-tealbrand-900/80 text-sm sm:text-base leading-relaxed space-y-4 font-normal">
-                <p>
-                    您好，我叫徐緯誠。出生於小康家庭，家庭成員3人，已婚且育有1子。性情溫和，做事仔細縝密。父母從小灌輸飲水思源的觀念並培養獨立思考能力，造就了我負責任且積極進取的人生態度。樂觀的性格使我在面對工作挑戰時，總能冷靜應對、圓滿解決。
-                </p>
-                <p>
-                    職涯早期於知名大廠「華碩電腦」擔任物管員，奠定了極其紮實的資材與倉儲基礎；後續於長生太陽能擔任生產企劃部主任管理師，以及安捷企業負責物控，累積了超過20年豐富的實務經歷。這些過程讓我深度理解團隊合作、溝通協調的重要性，並培養出快速理出事情輕重緩急、有效率完成交辦目標的能力。
-                </p>
-                <p>
-                    我具備 <strong class="text-tealbrand-900 font-semibold">堆高機技術士證照</strong> 與 <strong class="text-tealbrand-900 font-semibold">危險物品運送人員證明</strong>，熟練操作 TIPTOP ERP 系統及 Office 辦公軟體。未來若承蒙貴公司賞賜，我定將發揮所学，秉持積極細心的態度達成各項目標，與貴單位一同茁壯成長！
-                </p>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-tealbrand-900 flex items-center gap-2">
+                    <i class="fa-solid fa-rocket text-tealbrand-600"></i> 實用工具與專案作品
+                </h2>
+                <span class="text-xs bg-tealbrand-100 text-tealbrand-800 px-3 py-1 rounded-full font-semibold border border-tealbrand-200">4 項資源</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- 按鈕 1: Word 快捷鍵神助攻 (內建 Modal 工具) -->
+                <button onclick="openModal('modal-word-shortcuts')" class="text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700">
+                    <div class="flex items-center gap-3.5 z-10 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-xl shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-file-word"></i>
+                        </div>
+                        <div class="truncate">
+                            <div class="font-bold text-sm sm:text-base text-white truncate">Word 快捷鍵工具</div>
+                            <p class="text-xs text-tealbrand-100/80 truncate mt-0.5">物控行政必備速查</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-sm text-sunyellow-400 shrink-0 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+
+                <!-- 按鈕 2: MagicBlock 專案 (外部 GitHub 連結) -->
+                <a href="https://github.com/tienhsu114652/magicblock" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-900 to-darkslate hover:from-tealbrand-800 hover:to-tealbrand-900 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700/60">
+                    <div class="flex items-center gap-3.5 z-10 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white text-xl shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-brands fa-github"></i>
+                        </div>
+                        <div class="truncate">
+                            <div class="font-bold text-sm sm:text-base text-white truncate flex items-center gap-1.5">
+                                <span>MagicBlock</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-tealbrand-200"></i>
+                            </div>
+                            <p class="text-xs text-tealbrand-200/80 truncate mt-0.5">GitHub Repository</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-sm text-tealbrand-300 shrink-0 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+
+                <!-- 按鈕 3: 預留欄位 1 (未來專案) -->
+                <div class="bg-mintbg-50/80 border border-dashed border-tealbrand-300/80 text-tealbrand-800 p-4 sm:p-5 rounded-2xl flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-tealbrand-100/80 border border-tealbrand-200 flex items-center justify-center text-tealbrand-600 text-lg shrink-0">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="truncate">
+                            <div class="font-semibold text-sm sm:text-base text-tealbrand-900 truncate">專案連結 03</div>
+                            <p class="text-xs text-tealbrand-600/70 truncate mt-0.5">預留欄位 (即將推出)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 按鈕 4: 預留欄位 2 (未來專案) -->
+                <div class="bg-mintbg-50/80 border border-dashed border-tealbrand-300/80 text-tealbrand-800 p-4 sm:p-5 rounded-2xl flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-tealbrand-100/80 border border-tealbrand-200 flex items-center justify-center text-tealbrand-600 text-lg shrink-0">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="truncate">
+                            <div class="font-semibold text-sm sm:text-base text-tealbrand-900 truncate">專案連結 04</div>
+                            <p class="text-xs text-tealbrand-600/70 truncate mt-0.5">預留欄位 (即將推出)</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
