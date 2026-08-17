@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW" class="scroll-smooth">
 <head>
@@ -531,19 +532,22 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- 按鈕 1: Word 快捷鍵神助攻 (內建 Modal 工具) -->
-                <button onclick="openModal('modal-word-shortcuts')" class="text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700">
+                <!-- 按鈕 1: Word 快捷鍵神助攻 (外部網頁連結) -->
+                <a href="https://tienhsu114652.github.io/word-helper/" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700">
                     <div class="flex items-center gap-3.5 z-10 min-w-0">
                         <div class="w-11 h-11 rounded-xl bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-xl shrink-0 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-file-word"></i>
                         </div>
                         <div class="truncate">
-                            <div class="font-bold text-sm sm:text-base text-white truncate">Word 快捷鍵工具</div>
+                            <div class="font-bold text-sm sm:text-base text-white truncate flex items-center gap-1.5">
+                                <span>Word 快捷鍵工具</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-sunyellow-400"></i>
+                            </div>
                             <p class="text-xs text-tealbrand-100/80 truncate mt-0.5">物控行政必備速查</p>
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-sm text-sunyellow-400 shrink-0 group-hover:translate-x-1 transition-transform"></i>
-                </button>
+                </a>
 
                 <!-- 按鈕 2: MagicBlock 專案 (外部 GitHub 連結) -->
                 <a href="https://tienhsu114652.github.io/magicblock/" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-900 to-darkslate hover:from-tealbrand-800 hover:to-tealbrand-900 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700/60">
