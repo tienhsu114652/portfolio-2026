@@ -1,838 +1,415 @@
-<!DOCTYPE html>
-<html lang="zh-TW" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>徐緯誠 | 資深倉管物控專家 - 個人履歷單頁</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Noto Sans TC & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    body {
+        background-color: #121212;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 10px;
+    }
+
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #1e1e1e;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        max-width: 420px;
+        width: 100%;
+    }
+
+    h1 {
+        margin: 0 0 10px 0;
+        font-size: 1.8rem;
+        color: #4CAF50;
+        letter-spacing: 1px;
+    }
+
+    #score-board {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        font-weight: bold;
+        background: #2a2a2a;
+        padding: 8px 20px;
+        border-radius: 20px;
+        border: 1px solid #333;
+    }
+
+    canvas {
+        border: 2px solid #333333;
+        background-color: #050505;
+        border-radius: 8px;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* 控制按鈕區域 */
+    .controls-panel {
+        margin-top: 18px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* 功能按鈕 (暫停、重玩) */
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        flex: 1;
+        max-width: 140px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .btn-pause {
+        background-color: #f39c12;
+    }
+    .btn-pause:hover {
+        background-color: #d68910;
+    }
+
+    .btn-restart {
+        background-color: #e74c3c;
+    }
+    .btn-restart:hover {
+        background-color: #c0392b;
+    }
+
+    /* 十字鍵佈局 (D-Pad) */
+    .dpad {
+        display: grid;
+        grid-template-columns: repeat(3, 60px);
+        grid-template-rows: repeat(3, 60px);
+        gap: 6px;
+        margin-top: 5px;
+    }
+
+    .btn-dir {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        box-shadow: 0 4px 0 #1a252f;
+        transition: background-color 0.1s, transform 0.1s;
+    }
+
+    .btn-dir:active {
+        transform: translateY(4px);
+        box-shadow: 0 0 0 #1a252f;
+        background-color: #34495e;
+    }
+
+    #btn-up { grid-column: 2; grid-row: 1; }
+    #btn-left { grid-column: 1; grid-row: 2; }
+    #btn-right { grid-column: 3; grid-row: 2; }
+    #btn-down { grid-column: 2; grid-row: 3; }
+
+    .keyboard-hint {
+        margin-top: 12px;
+        font-size: 0.85rem;
+        color: #777;
+    }
+</style>
+
+
+<div class="game-container">
+    <h1>貪食蛇 Snake</h1>
+    <div id="score-board">得分: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="360" height="360"></canvas>
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        mintbg: {
-                            50: '#f2fbf9',
-                            100: '#e1f6f2',
-                            200: '#c6ede5',
-                        },
-                        tealbrand: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            800: '#115e59',
-                            900: '#134e4a',
-                        },
-                        sunyellow: {
-                            400: '#facc15',
-                            500: '#eab308',
-                            600: '#ca8a04',
-                        },
-                        oceanblue: {
-                            500: '#0284c7',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                        },
-                        darkslate: '#132e2c'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body {
-            background-color: #f2f9f8;
-            color: #132e2c;
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-        }
-        .bg-card-custom {
-            background-color: #FFFFFF;
-            border: 1px solid #d3e8e4;
-        }
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                background-color: #FFFFFF !important;
-                color: #000000 !important;
-            }
-            .bg-card-custom {
-                border: 1px solid #CCCCCC !important;
-                box-shadow: none !important;
-            }
-        }
-    </style>
-</head>
-<body class="min-h-screen antialiased selection:bg-tealbrand-100 selection:text-tealbrand-900">
-
-    <!-- Sticky Navigation Header -->
-    <nav class="sticky top-0 z-40 bg-[#f2f9f8]/90 backdrop-blur-md border-b border-[#d3e8e4] transition-all no-print">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <a href="#hero" class="font-bold text-lg text-tealbrand-800 tracking-wide flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-tealbrand-600 text-white flex items-center justify-center text-sm shadow-sm">
-                    <i class="fa-solid fa-boxes-packing"></i>
-                </span>
-                <span>徐緯誠</span>
-            </a>
-            <!-- Action / Mobile Toggle -->
-            <div class="flex items-center gap-2">
-                <button onclick="window.print()" class="text-xs sm:text-sm px-3 py-1.5 rounded-lg border border-tealbrand-600/30 text-tealbrand-800 hover:bg-tealbrand-50 transition flex items-center gap-1.5 font-medium">
-                    <i class="fa-solid fa-print"></i>
-                    <span class="hidden sm:inline">列印 / 存為PDF</span>
-                </button>
-                <button id="menu-btn" onclick="toggleMenu()" class="sm:hidden p-2 text-tealbrand-800 hover:text-tealbrand-900 focus:outline-none">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-            </div>
-            <!-- Desktop Links -->
-            <div class="hidden sm:flex gap-6 text-sm font-medium text-tealbrand-900/80">
-                <a href="#about" class="hover:text-tealbrand-600 transition">關於我</a>
-                <a href="#skills" class="hover:text-tealbrand-600 transition">專業技能</a>
-                <a href="#portfolio" class="hover:text-tealbrand-600 transition">歷練專案</a>
-                <a href="#experience" class="hover:text-tealbrand-600 transition">工作經歷</a>
-                <a href="#tools" class="hover:text-tealbrand-600 transition">實用工具與專案</a>
-                <a href="#contact" class="hover:text-tealbrand-600 transition">聯絡方式</a>
-            </div>
-        </div>
-        <!-- Mobile Dropdown -->
-        <div id="mobile-menu" class="hidden sm:hidden border-t border-tealbrand-100 bg-mintbg-50 px-4 py-3 space-y-2 text-sm text-tealbrand-900">
-            <a href="#about" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">關於我</a>
-            <a href="#skills" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">專業技能</a>
-            <a href="#portfolio" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">歷練專案</a>
-            <a href="#experience" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">工作經歷</a>
-            <a href="#tools" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">實用工具與專案</a>
-            <a href="#contact" onclick="toggleMenu()" class="block py-1 hover:text-tealbrand-600">聯絡方式</a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="hero" class="max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-6 sm:pt-12 sm:pb-8">
-        <div class="bg-card-custom rounded-2xl p-6 sm:p-10 shadow-sm relative overflow-hidden border border-tealbrand-100">
-            <!-- Decorative Vector Background Accent -->
-            <div class="absolute -right-12 -bottom-12 opacity-10 pointer-events-none text-tealbrand-800">
-                <i class="fa-solid fa-warehouse text-[160px]"></i>
-            </div>
-            
-            <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10">
-                <!-- Avatar / Badge -->
-                <div class="relative shrink-0">
-                    <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-br from-tealbrand-500 to-oceanblue-600 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
-                        <!-- Real Photo -->
-                        <img src="https://tienhsu114652.github.io/portfolio-2026/tien.png" alt="徐緯誠大頭照" class="w-full h-full object-cover object-top" onerror="this.style.display='none'; document.getElementById('avatar-fallback').classList.remove('hidden');">
-                        
-                        <!-- Fallback Vector Avatar (Matching photo features: Glasses, dark short hair, light shirt) for live web preview -->
-                        <svg id="avatar-fallback" class="w-full h-full hidden bg-mintbg-100" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="120" height="120" fill="#e1f6f2"/>
-                            <!-- Shoulders & Shirt -->
-                            <path d="M20 120 C20 92, 35 80, 60 80 C85 80, 100 92, 100 120 Z" fill="#cbd5e1"/>
-                            <path d="M48 80 L60 95 L72 80 Z" fill="#ffffff"/>
-                            <!-- Neck -->
-                            <rect x="52" y="66" width="16" height="18" fill="#f3d0b5" rx="3"/>
-                            <!-- Head & Ears -->
-                            <circle cx="37" cy="46" r="4.5" fill="#f7d8c2"/>
-                            <circle cx="83" cy="46" r="4.5" fill="#f7d8c2"/>
-                            <path d="M38 42 C38 24, 82 24, 82 42 C82 65, 70 72, 60 72 C50 72, 38 65, 38 42 Z" fill="#f7d8c2"/>
-                            <!-- Hair -->
-                            <path d="M35 40 C35 20, 46 14, 60 14 C74 14, 85 20, 85 40 C80 29, 70 23, 60 24 C48 23, 39 29, 35 40 Z" fill="#1e293b"/>
-                            <!-- Eyebrows -->
-                            <path d="M43 36 Q50 34 55 36" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M65 36 Q70 34 77 36" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
-                            <!-- Eyes -->
-                            <circle cx="49" cy="42" r="2.5" fill="#1e293b"/>
-                            <circle cx="71" cy="42" r="2.5" fill="#1e293b"/>
-                            <!-- Glasses -->
-                            <rect x="41" y="37" width="15" height="11" rx="2" stroke="#475569" stroke-width="2" fill="none"/>
-                            <rect x="64" y="37" width="15" height="11" rx="2" stroke="#475569" stroke-width="2" fill="none"/>
-                            <line x1="56" y1="41" x2="64" y2="41" stroke="#475569" stroke-width="2"/>
-                            <line x1="36" y1="41" x2="41" y2="41" stroke="#475569" stroke-width="2"/>
-                            <line x1="79" y1="41" x2="84" y2="41" stroke="#475569" stroke-width="2"/>
-                            <!-- Nose & Mouth -->
-                            <path d="M59 45 L58 51 L62 51" stroke="#e5b195" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                            <path d="M53 60 Q60 63 67 60" stroke="#b91c1c" stroke-width="1.5" stroke-linecap="round" opacity="0.6" fill="none"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Info Header -->
-                <div class="text-center md:text-left flex-1">
-                    <div class="inline-flex items-center gap-2 bg-tealbrand-50 text-tealbrand-800 text-xs font-semibold px-3 py-1 rounded-full border border-tealbrand-200 mb-2">
-                        <i class="fa-solid fa-briefcase text-sunyellow-600"></i> 20年+ 資深倉管物控 / 資材專家
-                    </div>
-                    <h1 class="text-3xl sm:text-4xl font-bold text-tealbrand-900 tracking-tight mb-2">
-                        徐緯誠
-                    </h1>
-                    <!-- One sentence positioning statement -->
-                    <p class="text-tealbrand-900/80 text-base sm:text-lg leading-relaxed mb-4 font-normal">
-                        「以縝密嚴謹的細節掌控與跨部門協調能力，達成<span class="font-bold text-tealbrand-800">料帳合一</span>、優化<span class="font-bold text-tealbrand-800">庫存週轉</span>與高效物流動線。」
-                    </p>
-
-                    <!-- Quick Action Contact Tags -->
-                    <div class="flex flex-wrap justify-center md:justify-start gap-2.5 text-xs sm:text-sm">
-                        <a href="tel:0925068163" class="inline-flex items-center gap-1.5 bg-mintbg-100 hover:bg-tealbrand-100 text-tealbrand-800 px-3 py-1.5 rounded-xl transition font-medium border border-tealbrand-200/50">
-                            <i class="fa-solid fa-phone text-oceanblue-600"></i> 0925-068-163
-                        </a>
-                        <a href="mailto:tien114652@hotmail.com" class="inline-flex items-center gap-1.5 bg-mintbg-100 hover:bg-tealbrand-100 text-tealbrand-800 px-3 py-1.5 rounded-xl transition font-medium border border-tealbrand-200/50">
-                            <i class="fa-solid fa-envelope text-oceanblue-600"></i> tien114652@hotmail.com
-                        </a>
-                        <span class="inline-flex items-center gap-1.5 bg-mintbg-100 text-tealbrand-800 px-3 py-1.5 rounded-xl font-medium border border-tealbrand-200/50">
-                            <i class="fa-solid fa-location-dot text-sunyellow-600"></i> 桃園市平鎮區
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Me Section -->
-    <section id="about" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm">
-            <h2 class="text-xl font-bold text-tealbrand-900 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-address-card text-tealbrand-600"></i> 關於我
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 text-tealbrand-900/80 leading-relaxed text-sm sm:text-base">
-                <div class="md:col-span-3 space-y-3">
-                    <p>
-                        您好，我是徐緯誠。具備超過 <strong class="text-tealbrand-900 font-semibold">20 年資材、倉管與物料管理經驗</strong>。職涯歷練涵蓋華碩電腦（大型科技廠）、長生太陽能（綠能製造）、安捷企業（橡塑膠）及印田實業（汽車零件）。
-                    </p>
-                    <p>
-                        性格溫和縝密、責任感強且溝通圓融。擅長將混亂的庫存結構化管理，透過 <strong class="text-tealbrand-900 font-semibold">TIPTOP / ERP 系統</strong> 正確落實「領、發、備、退料」與盤點作業，能第一時間化解現場物料異常，確保生產線流暢運作。
-                    </p>
-                </div>
-                <!-- Card with +20% width (md:col-span-2 out of 5) and +30% height spacing -->
-                <div class="md:col-span-2 bg-tealbrand-50/70 px-6 py-6 rounded-xl border border-tealbrand-100 space-y-4 text-xs sm:text-sm">
-                    <div class="font-bold text-tealbrand-900 border-b border-tealbrand-200/60 pb-2.5 text-sm sm:text-base">個人概況與偏好</div>
-                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">期待職務：</span><span class="font-semibold text-tealbrand-900">物管員 / 倉管員 / 備料員</span></div>
-                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">期待上班：</span><span class="font-semibold text-tealbrand-900">日班 / 週休二日</span></div>
-                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">工作地點：</span><span class="font-semibold text-tealbrand-900">桃園市區域</span></div>
-                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">專業證照：</span><span class="font-semibold text-tealbrand-900">堆高機 / 危傷運送證</span></div>
-                    <div class="flex justify-between py-0.5"><span class="text-tealbrand-700">駕照持有：</span><span class="font-semibold text-tealbrand-900">普通重機 / 自排汽車</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3 Core Skills Section -->
-    <section id="skills" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="mb-4">
-            <h2 class="text-xl font-bold text-tealbrand-900 flex items-center gap-2">
-                <i class="fa-solid fa-gears text-tealbrand-600"></i> 3 大核心專業技能
-            </h2>
-            <p class="text-tealbrand-700 text-xs sm:text-sm">累積20年現場實戰，兼具系統邏輯與現場執行能力</p>
+    <div class="controls-panel">
+        <!-- 功能控制項 -->
+        <div class="action-buttons">
+            <button id="pauseBtn" class="btn btn-pause">⏸️ 暫停</button>
+            <button id="restartBtn" class="btn btn-restart">🔄 重玩</button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Skill 1 -->
-            <div class="bg-card-custom p-6 rounded-2xl shadow-sm hover:border-tealbrand-500 hover:shadow transition group">
-                <div class="w-12 h-12 rounded-xl bg-tealbrand-100 border border-tealbrand-200 flex items-center justify-center text-tealbrand-700 text-xl mb-4 group-hover:bg-tealbrand-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-cubes-stacked"></i>
-                </div>
-                <h3 class="text-base font-bold text-tealbrand-900 mb-2">1. 庫存管控與料帳合一</h3>
-                <p class="text-xs sm:text-sm text-tealbrand-900/70 leading-relaxed mb-3">
-                    精通 TIPTOP 及 ERP 系統運作，熟練執行工單領退、調撥與異常帳務調整，嚴格控制帳實相符。
-                </p>
-                <ul class="text-xs text-tealbrand-800 space-y-1.5 border-t border-tealbrand-100 pt-3">
-                    <li><i class="fa-solid fa-circle-check text-oceanblue-600 mr-1.5"></i> TIPTOP / ERP 系統操作</li>
-                    <li><i class="fa-solid fa-circle-check text-oceanblue-600 mr-1.5"></i> 週期盤點與年度大盤點</li>
-                    <li><i class="fa-solid fa-circle-check text-oceanblue-600 mr-1.5"></i> 帳面異常原因追蹤與化解</li>
-                </ul>
-            </div>
-
-            <!-- Skill 2 -->
-            <div class="bg-card-custom p-6 rounded-2xl shadow-sm hover:border-tealbrand-500 hover:shadow transition group">
-                <div class="w-12 h-12 rounded-xl bg-sunyellow-400/20 border border-sunyellow-500/30 flex items-center justify-center text-sunyellow-600 text-xl mb-4 group-hover:bg-sunyellow-500 group-hover:text-white transition">
-                    <i class="fa-solid fa-truck-ramp-box"></i>
-                </div>
-                <h3 class="text-base font-bold text-tealbrand-900 mb-2">2. 倉儲作業與發料調度</h3>
-                <p class="text-xs sm:text-sm text-tealbrand-900/70 leading-relaxed mb-3">
-                    掌握進、備、領、發、退、報廢全流程。合理規劃庫區動線，確保產線備料精準不中斷。
-                </p>
-                <ul class="text-xs text-tealbrand-800 space-y-1.5 border-t border-tealbrand-100 pt-3">
-                    <li><i class="fa-solid fa-circle-check text-sunyellow-600 mr-1.5"></i> 電子/橡塑膠/汽車零件資材</li>
-                    <li><i class="fa-solid fa-circle-check text-sunyellow-600 mr-1.5"></i> 出貨排程與包裝管理</li>
-                    <li><i class="fa-solid fa-circle-check text-sunyellow-600 mr-1.5"></i> 閒置廢料清理提昇週轉率</li>
-                </ul>
-            </div>
-
-            <!-- Skill 3 -->
-            <div class="bg-card-custom p-6 rounded-2xl shadow-sm hover:border-tealbrand-500 hover:shadow transition group">
-                <div class="w-12 h-12 rounded-xl bg-oceanblue-500/10 border border-oceanblue-500/20 flex items-center justify-center text-oceanblue-600 text-xl mb-4 group-hover:bg-oceanblue-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-id-card-clip"></i>
-                </div>
-                <h3 class="text-base font-bold text-tealbrand-900 mb-2">3. 特用操作與跨部協調</h3>
-                <p class="text-xs sm:text-sm text-tealbrand-900/70 leading-relaxed mb-3">
-                    持有國家技術士堆高機證照與危傷物品運送證。能順暢對接供應商、採購與生產部門。
-                </p>
-                <ul class="text-xs text-tealbrand-800 space-y-1.5 border-t border-tealbrand-100 pt-3">
-                    <li><i class="fa-solid fa-circle-check text-tealbrand-600 mr-1.5"></i> 堆高機操作技術士 (單一級)</li>
-                    <li><i class="fa-solid fa-circle-check text-tealbrand-600 mr-1.5"></i> 危險物品運送人員證明</li>
-                    <li><i class="fa-solid fa-circle-check text-tealbrand-600 mr-1.5"></i> 廠區/委外收送貨作業</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3 Portfolio Placeholders / Key Highlights -->
-    <section id="portfolio" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="mb-4">
-            <h2 class="text-xl font-bold text-tealbrand-900 flex items-center gap-2">
-                <i class="fa-solid fa-folder-open text-tealbrand-600"></i> 3 項重要資歷與專案實練
-            </h2>
-            <p class="text-tealbrand-700 text-xs sm:text-sm">歷年在重點企業之物料管理與倉儲維運成果代表</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Project / Showcase Area 1 -->
-            <div class="bg-card-custom rounded-2xl overflow-hidden shadow-sm flex flex-col border border-tealbrand-100 hover:border-tealbrand-400 transition">
-                <div class="bg-tealbrand-800 text-white p-4 relative">
-                    <span class="text-[11px] bg-sunyellow-500 text-tealbrand-950 font-extrabold px-2 py-0.5 rounded shadow-sm">實務代表作 01</span>
-                    <h3 class="font-bold text-base mt-2 leading-snug">太陽能廠庫存與廢料優化專案</h3>
-                    <p class="text-xs text-tealbrand-100 mt-1">長生太陽能 | 2011 ~ 2019</p>
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <p class="text-xs sm:text-sm text-tealbrand-900/75 leading-relaxed">
-                        領導10人以內團隊，管控高價值太陽能材料進出與庫存。成功推動閒置廢料處置機制，有效降低呆滯資材比例，顯著提昇倉庫空間效益與資金週轉率。
-                    </p>
-                    <button onclick="openModal('modal1')" class="text-xs text-tealbrand-700 font-bold hover:text-tealbrand-900 inline-flex items-center gap-1">
-                        查看專案說明 <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Project / Showcase Area 2 -->
-            <div class="bg-card-custom rounded-2xl overflow-hidden shadow-sm flex flex-col border border-tealbrand-100 hover:border-tealbrand-400 transition">
-                <div class="bg-tealbrand-800 text-white p-4 relative">
-                    <span class="text-[11px] bg-sunyellow-500 text-tealbrand-950 font-extrabold px-2 py-0.5 rounded shadow-sm">實務代表作 02</span>
-                    <h3 class="font-bold text-base mt-2 leading-snug">橡塑膠原物料控管與跨廠調撥</h3>
-                    <p class="text-xs text-tealbrand-100 mt-1">安捷企業 | 2021 ~ 2025</p>
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <p class="text-xs sm:text-sm text-tealbrand-900/75 leading-relaxed">
-                        長達近4年負責生產訂購單開立與塑膠/橡膠原物料精準控管。建構完善的收備退料流程，精準維持料帳一致，確保多產線生產順暢無缺料停機風險。
-                    </p>
-                    <button onclick="openModal('modal2')" class="text-xs text-tealbrand-700 font-bold hover:text-tealbrand-900 inline-flex items-center gap-1">
-                        查看專案說明 <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Project / Showcase Area 3 -->
-            <div class="bg-card-custom rounded-2xl overflow-hidden shadow-sm flex flex-col border border-tealbrand-100 hover:border-tealbrand-400 transition">
-                <div class="bg-tealbrand-800 text-white p-4 relative">
-                    <span class="text-[11px] bg-sunyellow-500 text-tealbrand-950 font-extrabold px-2 py-0.5 rounded shadow-sm">實務代表作 03</span>
-                    <h3 class="font-bold text-base mt-2 leading-snug">大廠級電子零件備發料實務</h3>
-                    <p class="text-xs text-tealbrand-100 mt-1">華碩電腦 | 1999 ~ 2004</p>
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <p class="text-xs sm:text-sm text-tealbrand-900/75 leading-relaxed">
-                        在千人規模電腦大廠負責複雜電子零組件之進、備、發、退與報廢作業。建立高效率的零組件管理習慣，培育嚴謹的邏輯化物控基礎。
-                    </p>
-                    <button onclick="openModal('modal3')" class="text-xs text-tealbrand-700 font-bold hover:text-tealbrand-900 inline-flex items-center gap-1">
-                        查看專案說明 <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Work Experience Section -->
-    <section id="experience" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm">
-            <h2 class="text-xl font-bold text-tealbrand-900 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-timeline text-tealbrand-600"></i> 工作經歷 (累計 20~21 年)
-            </h2>
-
-            <div class="relative border-l-2 border-tealbrand-200 ml-3 sm:ml-4 space-y-8">
-                
-                <!-- Exp 1 -->
-                <div class="relative pl-6 sm:pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-600 border-4 border-white shadow"></span>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                        <h3 class="text-base font-bold text-tealbrand-900">物控｜安捷企業</h3>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-tealbrand-100 text-tealbrand-900 rounded-full w-fit">2021/07 ～ 2025/05 (3年11個月)</span>
-                    </div>
-                    <p class="text-xs text-tealbrand-700 mb-2">桃園市龍潭區｜塑膠制品製造｜規模 51-100人</p>
-                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
-                        <li>開立訂購單與進行原物料數量控管。</li>
-                        <li>維持庫存穩定，協調跨單位發料與調撥進度。</li>
-                    </ul>
-                </div>
-
-                <!-- Exp 2 -->
-                <div class="relative pl-6 sm:pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                        <h3 class="text-base font-bold text-tealbrand-900">生產企劃部主任管理師｜長生太陽能股份有限公司</h3>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">2011/12 ～ 2019/02 (7年3個月)</span>
-                    </div>
-                    <p class="text-xs text-tealbrand-700 mb-2">桃園市中壢區｜其他電力器材製造｜規模 201-500人｜管理10人以內</p>
-                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
-                        <li>管控庫存物料、管理收貨與儲藏，配合生產發貨進度。</li>
-                        <li>協助規劃跨部門間之物料流通，精準記錄庫存異動。</li>
-                        <li>處理閒置廢料以提高資產週轉率與空間利用。</li>
-                    </ul>
-                </div>
-
-                <!-- Exp 3 -->
-                <div class="relative pl-6 sm:pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                        <h3 class="text-base font-bold text-tealbrand-900">物控｜安捷企業</h3>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">2008/08 ～ 2010/03 (1年8個月)</span>
-                    </div>
-                    <p class="text-xs text-tealbrand-700 mb-2">桃園市平鎮區｜橡膠制品製造｜規模 101-200人</p>
-                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
-                        <li>原物料管控、調撥及倉儲整體規劃管理。</li>
-                        <li>負責收料、備料、退料與報廢完整流程處理。</li>
-                    </ul>
-                </div>
-
-                <!-- Exp 4 -->
-                <div class="relative pl-6 sm:pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                        <h3 class="text-base font-bold text-tealbrand-900">倉管組長｜印田實業</h3>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">2005/01 ～ 2007/01 (2年1個月)</span>
-                    </div>
-                    <p class="text-xs text-tealbrand-700 mb-2">桃園市中壢區｜汽車/零件製造｜規模 51-100人｜管理10人以內</p>
-                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
-                        <li>包材採購與倉儲物料管控。</li>
-                        <li>負責出貨排程規劃與包裝出貨安排。</li>
-                    </ul>
-                </div>
-
-                <!-- Exp 5 -->
-                <div class="relative pl-6 sm:pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-tealbrand-400 border-4 border-white"></span>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                        <h3 class="text-base font-bold text-tealbrand-900">物管員｜華碩電腦</h3>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-mintbg-100 text-tealbrand-800 rounded-full w-fit">1999/02 ～ 2004/07 (5年6個月)</span>
-                    </div>
-                    <p class="text-xs text-tealbrand-700 mb-2">桃園市龜山區｜電腦系統整合服務｜規模 1,001-2,000人</p>
-                    <ul class="text-xs sm:text-sm text-tealbrand-900/80 space-y-1 list-disc list-inside leading-relaxed">
-                        <li>電子零件進料、備料、發料、退料及報廢標準作業。</li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Licenses, Skills & Education Grid -->
-    <section class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="bg-card-custom p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
-            <div class="flex items-center justify-between border-b border-tealbrand-100 pb-4">
-                <h3 class="font-bold text-tealbrand-900 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-certificate text-tealbrand-600"></i> 證照與專業認證
-                </h3>
-                <span class="text-xs font-normal bg-tealbrand-50 text-tealbrand-700 px-2.5 py-1 rounded-full border border-tealbrand-200">Accredible 數位驗證 + 國家級執照</span>
-            </div>
-
-            <!-- 國家執照與技能簡覽 -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
-                <div class="bg-mintbg-50/70 p-3.5 rounded-xl border border-tealbrand-200/80">
-                    <div class="font-bold text-tealbrand-900 mb-1.5"><i class="fa-solid fa-certificate text-tealbrand-600 mr-1"></i> 國家級專業執照</div>
-                    <p class="text-tealbrand-800 text-xs leading-relaxed">堆高機操作技術士 (單一級)<br>危險物品運送人員證明</p>
-                </div>
-                <div class="bg-mintbg-50/70 p-3.5 rounded-xl border border-tealbrand-200/80">
-                    <div class="font-bold text-tealbrand-900 mb-1.5"><i class="fa-solid fa-desktop text-tealbrand-600 mr-1"></i> 電腦與系統軟體</div>
-                    <p class="text-tealbrand-800 text-xs leading-relaxed">TIPTOP ERP系統、Excel、Word、PowerPoint、Outlook</p>
-                </div>
-                <div class="bg-mintbg-50/70 p-3.5 rounded-xl border border-tealbrand-200/80">
-                    <div class="font-bold text-tealbrand-900 mb-1.5"><i class="fa-solid fa-keyboard text-tealbrand-600 mr-1"></i> 打字能力與語言</div>
-                    <p class="text-tealbrand-800 text-xs leading-relaxed">中文 30字/分｜英文 60字/分<br>英文聽說讀寫略通</p>
-                </div>
-            </div>
-
-            <!-- 3 Accredible Certificates Horizontal Row (3 Columns) -->
-            <div class="border-t border-tealbrand-100 pt-5">
-                <div class="font-bold text-tealbrand-900 mb-4 text-sm sm:text-base flex items-center justify-between">
-                    <span class="flex items-center gap-1.5">
-                        <i class="fa-solid fa-award text-tealbrand-600"></i>
-                        <span>專業數位認證證書（3項）</span>
-                    </span>
-                    <span class="text-xs font-normal text-tealbrand-600">水平並排模式</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Certificate 1 -->
-                    <div class="bg-mintbg-50/70 border border-tealbrand-200/80 rounded-xl p-4 hover:border-tealbrand-400 transition flex flex-col justify-between group">
-                        <div>
-                            <div class="w-full overflow-hidden rounded-lg border border-tealbrand-200 bg-white shadow-xs mb-3">
-                                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/191071122" alt="生成式 AI 職場生產力與自動化應用專業認證" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/600x420/14b8a6/ffffff?text=Digital+Certificate+191071122';">
-                            </div>
-                            <h4 class="font-bold text-tealbrand-900 text-sm flex items-start gap-1.5 leading-snug">
-                                <i class="fa-solid fa-circle-check text-tealbrand-600 text-xs shrink-0 mt-0.5"></i>
-                                <span>生成式 AI 職場生產力與自動化應用專業認證</span>
-                            </h4>
-                            <p class="text-xs text-tealbrand-900/80 leading-relaxed mt-2.5">
-                                本認證肯定了將生成式 AI 與自動化工具導入日常職場與資材物控流程的專業能力。課程涵蓋 Prompt 提示工程、AI 輔助數據分析、自動化表單處理與智慧文字生成。透過此認證，能有效運用 AI 升級傳統倉儲物料數據檢視、快速撰寫報告與異常分析，將重複性行政作業大幅精簡，展現跨領域數位轉型與實務應用價值。
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Certificate 2 -->
-                    <div class="bg-mintbg-50/70 border border-tealbrand-200/80 rounded-xl p-4 hover:border-tealbrand-400 transition flex flex-col justify-between group">
-                        <div>
-                            <div class="w-full overflow-hidden rounded-lg border border-tealbrand-200 bg-white shadow-xs mb-3">
-                                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/191066516?key=c49172a0df2da4caa5145a292180ea08481d8d6da2c857b8fbac2087daefc380" alt="智慧倉儲與現代化供應鏈數據管理證照" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/600x420/14b8a6/ffffff?text=Digital+Certificate+191066516';">
-                            </div>
-                            <h4 class="font-bold text-tealbrand-900 text-sm flex items-start gap-1.5 leading-snug">
-                                <i class="fa-solid fa-circle-check text-tealbrand-600 text-xs shrink-0 mt-0.5"></i>
-                                <span>智慧倉儲與現代化供應鏈數據管理證照</span>
-                            </h4>
-                            <p class="text-xs text-tealbrand-900/80 leading-relaxed mt-2.5">
-                                本證照專注於現代化智慧倉儲架構、庫存數據分析及動態物料控制技術。內容涵蓋 ERP/TIPTOP 數據整合實務、庫存週轉率最佳化模型、ABC 分類法升級與品號追溯邏輯。取得此認證代表具備結合 20 年實務經驗與現代化數據分析工具的能力，能精準掌握料帳一致性、預測物料需求並極小化呆滯廢料風險。
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Certificate 3 -->
-                    <div class="bg-mintbg-50/70 border border-tealbrand-200/80 rounded-xl p-4 hover:border-tealbrand-400 transition flex flex-col justify-between group">
-                        <div>
-                            <div class="w-full overflow-hidden rounded-lg border border-tealbrand-200 bg-white shadow-xs mb-3">
-                                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/191055638" alt="數位化流程優化與高效專案管理認證" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/600x420/14b8a6/ffffff?text=Digital+Certificate+191055638';">
-                            </div>
-                            <h4 class="font-bold text-tealbrand-900 text-sm flex items-start gap-1.5 leading-snug">
-                                <i class="fa-solid fa-circle-check text-tealbrand-600 text-xs shrink-0 mt-0.5"></i>
-                                <span>數位化流程優化與高效專案管理認證</span>
-                            </h4>
-                            <p class="text-xs text-tealbrand-900/80 leading-relaxed mt-2.5">
-                                本認證著重於企業流程梳理、精益管理（Lean Management）及數位專案推動能力。涵蓋發料備料流程優化、跨部門溝通協調、跨廠區調撥排程規劃與品質異常控制。具備此認證意味著能以敏捷且嚴謹的專案管理思維，帶領倉管物控團隊建立標準作業程序（SOP），持續提升廠區營運效率與整體物料流轉效益。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Practical Tools & Portfolio Section -->
-    <section id="tools" class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-        <div class="bg-card-custom rounded-2xl p-6 sm:p-8 shadow-sm border border-tealbrand-100">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-tealbrand-900 flex items-center gap-2">
-                    <i class="fa-solid fa-rocket text-tealbrand-600"></i> 實用工具與專案作品
-                </h2>
-                <span class="text-xs bg-tealbrand-100 text-tealbrand-800 px-3 py-1 rounded-full font-semibold border border-tealbrand-200">4 項資源</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- 按鈕 1: Word 快捷鍵神助攻 (外部網頁連結) -->
-                <a href="https://tienhsu114652.github.io/word-helper/" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-800 to-tealbrand-900 hover:from-tealbrand-700 hover:to-tealbrand-800 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700">
-                    <div class="flex items-center gap-3.5 z-10 min-w-0">
-                        <div class="w-11 h-11 rounded-xl bg-sunyellow-500/20 border border-sunyellow-400/30 flex items-center justify-center text-sunyellow-400 text-xl shrink-0 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-file-word"></i>
-                        </div>
-                        <div class="truncate">
-                            <div class="font-bold text-sm sm:text-base text-white truncate flex items-center gap-1.5">
-                                <span>Word 快捷鍵工具</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-sunyellow-400"></i>
-                            </div>
-                            <p class="text-xs text-tealbrand-100/80 truncate mt-0.5">物控行政必備速查</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-sm text-sunyellow-400 shrink-0 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-
-                <!-- 按鈕 2: MagicBlock 專案 (外部 GitHub 連結) -->
-                <a href="https://tienhsu114652.github.io/magicblock/" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-900 to-darkslate hover:from-tealbrand-800 hover:to-tealbrand-900 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-700/60">
-                    <div class="flex items-center gap-3.5 z-10 min-w-0">
-                        <div class="w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white text-xl shrink-0 group-hover:scale-110 transition-transform">
-                            <i class="fa-brands fa-github"></i>
-                        </div>
-                        <div class="truncate">
-                            <div class="font-bold text-sm sm:text-base text-white truncate flex items-center gap-1.5">
-                                <span>MagicBlock</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-tealbrand-200"></i>
-                            </div>
-                            <p class="text-xs text-tealbrand-200/80 truncate mt-0.5">GitHub Repository</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-sm text-tealbrand-300 shrink-0 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-
-                <!-- 按鈕 3: 課堂多人遊戲 (外部網頁連結) -->
-                <a href="https://classgame01.onrender.com" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-800 to-oceanblue-700 hover:from-tealbrand-700 hover:to-oceanblue-600 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-600">
-                    <div class="flex items-center gap-3.5 z-10 min-w-0">
-                        <div class="w-11 h-11 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                            <span>🎮</span>
-                        </div>
-                        <div class="truncate">
-                            <div class="font-bold text-sm sm:text-base text-white truncate flex items-center gap-1.5">
-                                <span>課堂多人遊戲</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-tealbrand-200"></i>
-                            </div>
-                            <p class="text-xs text-tealbrand-100/80 truncate mt-0.5">線上互動遊戲平台</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-sm text-tealbrand-300 shrink-0 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-
-                <!-- 按鈕 4: 貪食蛇 (外部網頁連結) -->
-                <a href="https://tienhsu114652.github.io/portfolio-2026/snake_game.html" target="_blank" rel="noopener noreferrer" class="text-left bg-gradient-to-br from-tealbrand-900 to-tealbrand-800 hover:from-tealbrand-800 hover:to-tealbrand-700 text-white p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex items-center justify-between gap-3 border border-tealbrand-600">
-                    <div class="flex items-center gap-3.5 z-10 min-w-0">
-                        <div class="w-11 h-11 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                            <span>🐍</span>
-                        </div>
-                        <div class="truncate">
-                            <div class="font-bold text-sm sm:text-base text-white truncate flex items-center gap-1.5">
-                                <span>貪食蛇</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-tealbrand-200"></i>
-                            </div>
-                            <p class="text-xs text-tealbrand-100/80 truncate mt-0.5">經典懷舊遊戲</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-sm text-tealbrand-300 shrink-0 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="max-w-4xl mx-auto px-4 sm:px-6 pt-4 pb-16">
-        <div class="bg-tealbrand-900 text-tealbrand-50 rounded-2xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
-            <!-- Decorative Accent Circle -->
-            <div class="absolute -right-16 -top-16 w-64 h-64 bg-tealbrand-700/30 rounded-full blur-2xl pointer-events-none"></div>
-
-            <div class="relative z-10 text-center sm:text-left">
-                <h2 class="text-2xl font-bold text-white mb-2">準備好招募具備20年經驗的資材專家了嗎？</h2>
-                <p class="text-tealbrand-100/80 text-sm mb-6">歡迎透過電話或 Email 直接與我聯繫，我將於最短時間內回覆您。</p>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
-                    <a href="tel:0925068163" class="bg-sunyellow-500 hover:bg-sunyellow-400 text-tealbrand-950 font-bold p-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
-                        <i class="fa-solid fa-phone"></i>
-                        <span>撥打手機：0925-068-163</span>
-                    </a>
-                    <a href="mailto:tien114652@hotmail.com" class="bg-tealbrand-800 hover:bg-tealbrand-700 border border-tealbrand-700 text-white font-semibold p-3.5 rounded-xl flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span>發送 Email 郵件</span>
-                    </a>
-                </div>
-
-                <div class="mt-6 pt-6 border-t border-tealbrand-800 flex flex-wrap justify-between text-xs text-tealbrand-200/80 gap-2">
-                    <div><i class="fa-solid fa-house text-sunyellow-500 mr-1"></i> 居住地址：桃園市平鎮區大昌路</div>
-                    <div><i class="fa-solid fa-clock text-sunyellow-500 mr-1"></i> 可方便聯繫時間：00:00 ~ 24:00</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center text-xs text-tealbrand-800/60 mt-8 no-print">
-            © <script>document.write(new Date().getFullYear())</script> 徐緯誠 個人履歷單頁
-        </div>
-    </section>
-
-    <!-- Modal 1: Project Detail 1 -->
-    <div id="modal1" class="fixed inset-0 bg-tealbrand-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white max-w-lg w-full rounded-2xl p-6 space-y-4 relative shadow-2xl border border-tealbrand-100">
-            <button onclick="closeModal('modal1')" class="absolute top-4 right-4 text-tealbrand-700 hover:text-tealbrand-900">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h3 class="text-lg font-bold text-tealbrand-900">太陽能廠庫存與廢料優化專案</h3>
-            <p class="text-xs text-tealbrand-700 font-semibold">任職單位：長生太陽能股份有限公司 (主管職)</p>
-            <div class="text-xs sm:text-sm text-tealbrand-900/80 space-y-2 leading-relaxed">
-                <p><strong>專案亮點與內容：</strong></p>
-                <ul class="list-disc list-inside space-y-1">
-                    <li>領導最多10人之倉管物流團隊，精準管理高價值太陽能原物料。</li>
-                    <li>建立每日/每週料帳對應機制，降低帳實不符機率至 minimal。</li>
-                    <li>擬定閒置物料與廢料處置流程，加速報廢與拍賣流程，大幅提升倉庫週轉率與空間彈性。</li>
-                </ul>
-            </div>
-            <div class="pt-3 border-t text-right">
-                <button onclick="closeModal('modal1')" class="px-4 py-2 bg-tealbrand-50 hover:bg-tealbrand-100 text-tealbrand-800 text-xs font-semibold rounded-lg">關閉</button>
-            </div>
+        <!-- 方向鍵控制項 -->
+        <div class="dpad">
+            <button id="btn-up" class="btn-dir">▲</button>
+            <button id="btn-left" class="btn-dir">◄</button>
+            <button id="btn-right" class="btn-dir">►</button>
+            <button id="btn-down" class="btn-dir">▼</button>
         </div>
     </div>
 
-    <!-- Modal 2: Project Detail 2 -->
-    <div id="modal2" class="fixed inset-0 bg-tealbrand-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white max-w-lg w-full rounded-2xl p-6 space-y-4 relative shadow-2xl border border-tealbrand-100">
-            <button onclick="closeModal('modal2')" class="absolute top-4 right-4 text-tealbrand-700 hover:text-tealbrand-900">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h3 class="text-lg font-bold text-tealbrand-900">橡塑膠原物料控管與跨廠調撥</h3>
-            <p class="text-xs text-tealbrand-700 font-semibold">任職單位：安捷企業</p>
-            <div class="text-xs sm:text-sm text-tealbrand-900/80 space-y-2 leading-relaxed">
-                <p><strong>專案亮點與內容：</strong></p>
-                <ul class="list-disc list-inside space-y-1">
-                    <li>負責精細之訂購單開立與塑膠/橡膠原物料需求預估。</li>
-                    <li>協助多廠區/跨部門間的物料順暢調撥，確保關鍵備件及原物料不缺貨。</li>
-                    <li>標準化收料、備料與發料，大幅提昇作業流暢度。</li>
-                </ul>
-            </div>
-            <div class="pt-3 border-t text-right">
-                <button onclick="closeModal('modal2')" class="px-4 py-2 bg-tealbrand-50 hover:bg-tealbrand-100 text-tealbrand-800 text-xs font-semibold rounded-lg">關閉</button>
-            </div>
-        </div>
-    </div>
+    <div class="keyboard-hint">支援鍵盤方向鍵 (↑ ↓ ← →) 或 W A S D 操作</div>
+</div>
 
-    <!-- Modal 3: Project Detail 3 -->
-    <div id="modal3" class="fixed inset-0 bg-tealbrand-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white max-w-lg w-full rounded-2xl p-6 space-y-4 relative shadow-2xl border border-tealbrand-100">
-            <button onclick="closeModal('modal3')" class="absolute top-4 right-4 text-tealbrand-700 hover:text-tealbrand-900">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h3 class="text-lg font-bold text-tealbrand-900">大廠級電子零件備發料實務</h3>
-            <p class="text-xs text-tealbrand-700 font-semibold">任職單位：華碩電腦</p>
-            <div class="text-xs sm:text-sm text-tealbrand-900/80 space-y-2 leading-relaxed">
-                <p><strong>專案亮點與內容：</strong></p>
-                <ul class="list-disc list-inside space-y-1">
-                    <li>在千人規模高科技製造廠，執行電子零件進備發退報廢高強度作業。</li>
-                    <li>培養對大量品號（PN）的精準辨識力與細緻度。</li>
-                    <li>奠定後續20年嚴謹物流與料帳管理習慣。</li>
-                </ul>
-            </div>
-            <div class="pt-3 border-t text-right">
-                <button onclick="closeModal('modal3')" class="px-4 py-2 bg-tealbrand-50 hover:bg-tealbrand-100 text-tealbrand-800 text-xs font-semibold rounded-lg">關閉</button>
-            </div>
-        </div>
-    </div>
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreElement = document.getElementById("score");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const restartBtn = document.getElementById("restartBtn");
 
-    <!-- Modal 4: Word 快捷鍵神助攻 - 管理大師 工具 -->
-    <div id="modal-word-shortcuts" class="fixed inset-0 bg-tealbrand-950/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-white max-w-2xl w-full rounded-2xl p-5 sm:p-7 space-y-4 relative shadow-2xl border border-tealbrand-100 max-h-[90vh] flex flex-col">
-            <!-- Header -->
-            <div class="flex items-center justify-between border-b border-tealbrand-100 pb-3 shrink-0">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-lg bg-tealbrand-600 text-white flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-file-word"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-tealbrand-900">Word 快捷鍵神助攻 - 管理大師</h3>
-                        <p class="text-xs text-tealbrand-600">提升文書與倉管表單處理效率之必備速查工具</p>
-                    </div>
-                </div>
-                <button onclick="closeModal('modal-word-shortcuts')" class="text-tealbrand-700 hover:text-tealbrand-900 p-1">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-            </div>
+    // 網格設定
+    const gridSize = 18;
+    const tileCount = canvas.width / gridSize;
 
-            <!-- Search & Filters -->
-            <div class="space-y-2 shrink-0">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-tealbrand-400 text-xs"></i>
-                    <input type="text" id="shortcut-search" oninput="filterShortcuts()" placeholder="搜尋快捷鍵功能或按鍵（如：重複、表格、搜尋...）" class="w-full pl-9 pr-3 py-2 bg-mintbg-50 text-xs sm:text-sm text-tealbrand-900 rounded-xl border border-tealbrand-200 focus:outline-none focus:border-tealbrand-600 transition">
-                </div>
-                <div class="flex flex-wrap gap-1.5 text-xs" id="shortcut-tabs">
-                    <button onclick="setShortcutCategory('all')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-tealbrand-600 text-white font-medium transition" data-cat="all">全部</button>
-                    <button onclick="setShortcutCategory('base')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="base">常用基礎</button>
-                    <button onclick="setShortcutCategory('table')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="table">表格排版</button>
-                    <button onclick="setShortcutCategory('select')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="select">快速選取</button>
-                    <button onclick="setShortcutCategory('pro')" class="shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition" data-cat="pro">物控高效神招</button>
-                </div>
-            </div>
+    // 遊戲狀態 Variables
+    let snake = [];
+    let food = { x: 0, y: 0 };
+    let dx = gridSize;
+    let dy = 0;
+    let score = 0;
+    let gameInterval = null;
+    let isGameOver = false;
+    let isPaused = false;
+    let changingDirection = false;
 
-            <!-- Shortcuts List (Scrollable) -->
-            <div class="overflow-y-auto space-y-2 pr-1 flex-1 text-xs sm:text-sm" id="shortcut-list">
-                <!-- Items populated dynamically by JS -->
-            </div>
-
-            <div class="pt-3 border-t border-tealbrand-100 flex items-center justify-between text-xs shrink-0">
-                <span class="text-tealbrand-600"><i class="fa-solid fa-lightbulb text-sunyellow-500 mr-1"></i>小技巧：隨時使用搜尋框即可快速檢索組合鍵</span>
-                <button onclick="closeModal('modal-word-shortcuts')" class="px-4 py-1.5 bg-tealbrand-100 hover:bg-tealbrand-200 text-tealbrand-900 font-semibold rounded-lg transition">關閉工具</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-            if (id === 'modal-word-shortcuts') {
-                renderShortcuts();
-            }
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        // Word Shortcuts Tool Data
-        const shortcutsData = [
-            { cat: 'pro', keys: ['F4'], name: '重複上一步動作', desc: '物控核對與格式重複套用必備神招，省時50%' },
-            { cat: 'pro', keys: ['Ctrl', 'F2'], name: '列印預覽', desc: '快速查看表單列印範圍與頁面邊界' },
-            { cat: 'pro', keys: ['Shift', 'F3'], name: '英文大小寫切換', desc: '英文料號品名大小寫快速轉換' },
-            { cat: 'base', keys: ['Ctrl', 'Z'], name: '復原（Undo）', desc: '撤銷上一步誤操作' },
-            { cat: 'base', keys: ['Ctrl', 'Y'], name: '重做（Redo）', desc: '恢復剛撤銷的動作' },
-            { cat: 'base', keys: ['Ctrl', 'F'], name: '尋找文字/料號', desc: '在大文件中快速查找特定文字或料號' },
-            { cat: 'base', keys: ['Ctrl', 'H'], name: '取代文字', desc: '批次更換格式或名稱' },
-            { cat: 'base', keys: ['Ctrl', 'S'], name: '儲存檔案', desc: '隨時存檔防止資料流失' },
-            { cat: 'base', keys: ['Ctrl', 'A'], name: '全選文字', desc: '選取整份文件所有內容' },
-            { cat: 'table', keys: ['Alt', 'Shift', '↑ / ↓'], name: '上移/下移表格列', desc: '不需剪貼，快速調整表格列或段落順序' },
-            { cat: 'table', keys: ['Tab'], name: '下一格 / 新增列', desc: '在表格最後一格按下可直接新增下一列' },
-            { cat: 'table', keys: ['Shift', 'Tab'], name: '上一格', desc: '移動至表格前一個儲存格' },
-            { cat: 'table', keys: ['Ctrl', 'Shift', 'Enter'], name: '拆分表格', desc: '在游標處將一個表格分割為兩個' },
-            { cat: 'select', keys: ['Ctrl', 'Shift', '← / →'], name: '逐字/逐詞選取', desc: '精準快速選取特定詞彙或料號' },
-            { cat: 'select', keys: ['Shift', 'Home / End'], name: '選取至行首/行尾', desc: '快速選取整行文字' },
-            { cat: 'select', keys: ['Ctrl', 'Shift', 'Home / End'], name: '選取至文件開頭/結尾', desc: '大規模選取內容' }
+    // 初始化遊戲
+    function initGame() {
+        snake = [
+            { x: 144, y: 180 },
+            { x: 126, y: 180 },
+            { x: 108, y: 180 }
         ];
+        score = 0;
+        dx = gridSize;
+        dy = 0;
+        isGameOver = false;
+        isPaused = false;
+        scoreElement.innerText = score;
+        pauseBtn.innerText = "⏸️ 暫停";
+        pauseBtn.style.backgroundColor = "#f39c12";
+        
+        generateFood();
+        
+        if (gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, 110);
+    }
 
-        let currentCat = 'all';
+    // 主遊戲迴圈
+    function gameLoop() {
+        if (isGameOver || isPaused) return;
 
-        function setShortcutCategory(cat) {
-            currentCat = cat;
-            document.querySelectorAll('.shortcut-tab').forEach(tab => {
-                if (tab.dataset.cat === cat) {
-                    tab.className = 'shortcut-tab px-2.5 py-1 rounded-lg bg-tealbrand-600 text-white font-medium transition';
-                } else {
-                    tab.className = 'shortcut-tab px-2.5 py-1 rounded-lg bg-mintbg-100 text-tealbrand-800 hover:bg-tealbrand-100 font-medium transition';
-                }
-            });
-            renderShortcuts();
+        changingDirection = false;
+        clearCanvas();
+        drawFood();
+        moveSnake();
+        drawSnake();
+        checkCollision();
+    }
+
+    // 清除畫布
+    function clearCanvas() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 繪製背景微弱網格
+        ctx.strokeStyle = "#111111";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(canvas.width, i);
+            ctx.stroke();
         }
+    }
 
-        function filterShortcuts() {
-            renderShortcuts();
+    // 畫出貪食蛇
+    function drawSnake() {
+        snake.forEach((part, index) => {
+            ctx.fillStyle = index === 0 ? "#4CAF50" : "#81C784";
+            ctx.strokeStyle = "#050505";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(part.x, part.y, gridSize, gridSize, index === 0 ? 4 : 2);
+            ctx.fill();
+            ctx.stroke();
+        });
+    }
+
+    // 移動貪食蛇
+    function moveSnake() {
+        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+        snake.unshift(head);
+
+        if (head.x === food.x && head.y === food.y) {
+            score += 10;
+            scoreElement.innerText = score;
+            generateFood();
+        } else {
+            snake.pop();
         }
+    }
 
-        function renderShortcuts() {
-            const search = (document.getElementById('shortcut-search')?.value || '').toLowerCase();
-            const container = document.getElementById('shortcut-list');
-            if (!container) return;
+    // 隨機生成食物
+    function generateFood() {
+        while (true) {
+            food.x = Math.floor(Math.random() * tileCount) * gridSize;
+            food.y = Math.floor(Math.random() * tileCount) * gridSize;
 
-            const filtered = shortcutsData.filter(item => {
-                const matchCat = currentCat === 'all' || item.cat === currentCat;
-                const matchSearch = !search || 
-                    item.name.toLowerCase().includes(search) || 
-                    item.desc.toLowerCase().includes(search) || 
-                    item.keys.join(' ').toLowerCase().includes(search);
-                return matchCat && matchSearch;
-            });
+            let isFoodOnSnake = snake.some(part => part.x === food.x && part.y === food.y);
+            if (!isFoodOnSnake) break;
+        }
+    }
 
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-tealbrand-600 text-xs">沒有找到相符的快捷鍵</div>';
-                return;
+    // 畫出食物
+    function drawFood() {
+        ctx.fillStyle = "#FF5252";
+        ctx.beginPath();
+        ctx.arc(food.x + gridSize / 2, food.y + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 碰撞偵測
+    function checkCollision() {
+        const head = snake[0];
+
+        const hitLeftWall = head.x < 0;
+        const hitRightWall = head.x >= canvas.width;
+        const hitTopWall = head.y < 0;
+        const hitBottomWall = head.y >= canvas.height;
+
+        let hitSelf = false;
+        for (let i = 1; i < snake.length; i++) {
+            if (head.x === snake[i].x && head.y === snake[i].y) {
+                hitSelf = true;
+                break;
             }
-
-            container.innerHTML = filtered.map(item => `
-                <div class="bg-mintbg-50 hover:bg-tealbrand-50 border border-tealbrand-100 p-2.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition">
-                    <div>
-                        <div class="font-bold text-tealbrand-900">${item.name}</div>
-                        <div class="text-xs text-tealbrand-700/80 mt-0.5">${item.desc}</div>
-                    </div>
-                    <div class="flex items-center gap-1 shrink-0">
-                        ${item.keys.map(k => `<kbd class="px-2 py-1 bg-white border border-tealbrand-300 rounded text-xs font-mono font-bold text-tealbrand-900 shadow-xs">${k}</kbd>`).join('<span class="text-tealbrand-400 text-xs">+</span>')}
-                    </div>
-                </div>
-            `).join('');
         }
-    </script>
-</body>
-</html>
+
+        if (hitLeftWall || hitRightWall || hitTopWall || hitBottomWall || hitSelf) {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            drawGameOver();
+        }
+    }
+
+    // Game Over 畫面
+    function drawGameOver() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#FF5252";
+        ctx.font = "bold 28px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 10);
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "14px Arial";
+        ctx.fillText("點擊 [重玩] 重新開始遊戲", canvas.width / 2, canvas.height / 2 + 30);
+    }
+
+    // 暫停畫面
+    function drawPauseOverlay() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#f39c12";
+        ctx.font = "bold 28px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("遊戲暫停", canvas.width / 2, canvas.height / 2 + 10);
+    }
+
+    // 控制轉向邏輯
+    function changeDirection(dir) {
+        if (isGameOver || isPaused || changingDirection) return;
+
+        const goingUp = dy === -gridSize;
+        const goingDown = dy === gridSize;
+        const goingRight = dx === gridSize;
+        const goingLeft = dx === -gridSize;
+
+        if (dir === "LEFT" && !goingRight) {
+            dx = -gridSize;
+            dy = 0;
+            changingDirection = true;
+        } else if (dir === "UP" && !goingDown) {
+            dx = 0;
+            dy = -gridSize;
+            changingDirection = true;
+        } else if (dir === "RIGHT" && !goingLeft) {
+            dx = gridSize;
+            dy = 0;
+            changingDirection = true;
+        } else if (dir === "DOWN" && !goingUp) {
+            dx = 0;
+            dy = gridSize;
+            changingDirection = true;
+        }
+    }
+
+    // 暫停 / 繼續 切換
+    function togglePause() {
+        if (isGameOver) return;
+        
+        isPaused = !isPaused;
+        if (isPaused) {
+            pauseBtn.innerText = "▶️ 繼續";
+            pauseBtn.style.backgroundColor = "#27ae60";
+            drawPauseOverlay();
+        } else {
+            pauseBtn.innerText = "⏸️ 暫停";
+            pauseBtn.style.backgroundColor = "#f39c12";
+        }
+    }
+
+    // 綁定鍵盤事件
+    document.addEventListener("keydown", (event) => {
+        const key = event.key;
+
+        if (key === "P" || key === "p" || key === " ") {
+            togglePause();
+            return;
+        }
+
+        if (key === "ArrowLeft" || key === "a" || key === "A") changeDirection("LEFT");
+        else if (key === "ArrowUp" || key === "w" || key === "W") changeDirection("UP");
+        else if (key === "ArrowRight" || key === "d" || key === "D") changeDirection("RIGHT");
+        else if (key === "ArrowDown" || key === "s" || key === "S") changeDirection("DOWN");
+    });
+
+    // 綁定 UI 按鈕事件
+    document.getElementById("btn-up").addEventListener("click", () => changeDirection("UP"));
+    document.getElementById("btn-left").addEventListener("click", () => changeDirection("LEFT"));
+    document.getElementById("btn-right").addEventListener("click", () => changeDirection("RIGHT"));
+    document.getElementById("btn-down").addEventListener("click", () => changeDirection("DOWN"));
+
+    pauseBtn.addEventListener("click", togglePause);
+    restartBtn.addEventListener("click", initGame);
+
+    // 啟動遊戲
+    initGame();
+</script>
