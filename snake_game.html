@@ -1,415 +1,880 @@
-    body {
-        background-color: #121212;
-        color: #ffffff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        margin: 0;
-        padding: 10px;
-    }
-
-    .game-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #1e1e1e;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        max-width: 420px;
-        width: 100%;
-    }
-
-    h1 {
-        margin: 0 0 10px 0;
-        font-size: 1.8rem;
-        color: #4CAF50;
-        letter-spacing: 1px;
-    }
-
-    #score-board {
-        font-size: 1.2rem;
-        margin-bottom: 15px;
-        font-weight: bold;
-        background: #2a2a2a;
-        padding: 8px 20px;
-        border-radius: 20px;
-        border: 1px solid #333;
-    }
-
-    canvas {
-        border: 2px solid #333333;
-        background-color: #050505;
-        border-radius: 8px;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-        max-width: 100%;
-        height: auto;
-    }
-
-    /* 控制按鈕區域 */
-    .controls-panel {
-        margin-top: 18px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    /* 功能按鈕 (暫停、重玩) */
-    .action-buttons {
-        display: flex;
-        gap: 12px;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .btn {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 1rem;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        flex: 1;
-        max-width: 140px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-
-    .btn:active {
-        transform: scale(0.95);
-    }
-
-    .btn-pause {
-        background-color: #f39c12;
-    }
-    .btn-pause:hover {
-        background-color: #d68910;
-    }
-
-    .btn-restart {
-        background-color: #e74c3c;
-    }
-    .btn-restart:hover {
-        background-color: #c0392b;
-    }
-
-    /* 十字鍵佈局 (D-Pad) */
-    .dpad {
-        display: grid;
-        grid-template-columns: repeat(3, 60px);
-        grid-template-rows: repeat(3, 60px);
-        gap: 6px;
-        margin-top: 5px;
-    }
-
-    .btn-dir {
-        background-color: #2c3e50;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.5rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        user-select: none;
-        box-shadow: 0 4px 0 #1a252f;
-        transition: background-color 0.1s, transform 0.1s;
-    }
-
-    .btn-dir:active {
-        transform: translateY(4px);
-        box-shadow: 0 0 0 #1a252f;
-        background-color: #34495e;
-    }
-
-    #btn-up { grid-column: 2; grid-row: 1; }
-    #btn-left { grid-column: 1; grid-row: 2; }
-    #btn-right { grid-column: 3; grid-row: 2; }
-    #btn-down { grid-column: 2; grid-row: 3; }
-
-    .keyboard-hint {
-        margin-top: 12px;
-        font-size: 0.85rem;
-        color: #777;
-    }
-</style>
-
-
-<div class="game-container">
-    <h1>貪食蛇 Snake</h1>
-    <div id="score-board">得分: <span id="score">0</span></div>
-    <canvas id="gameCanvas" width="360" height="360"></canvas>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>極光霓虹 - 貪食蛇 (Cyber Snake)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <div class="controls-panel">
-        <!-- 功能控制項 -->
-        <div class="action-buttons">
-            <button id="pauseBtn" class="btn btn-pause">⏸️ 暫停</button>
-            <button id="restartBtn" class="btn btn-restart">🔄 重玩</button>
+    <style>
+        * {
+            font-family: 'Outfit', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .font-arcade {
+            font-family: 'Press Start 2P', monospace;
+        }
+        
+        /* Dynamic Theme Variables */
+        :root {
+            --bg-main: #0b0f19;
+            --panel-bg: rgba(18, 24, 38, 0.8);
+            --border-color: #1f293d;
+            --accent-color: #06b6d4;
+            --snake-head: #22d3ee;
+            --snake-body: #0891b2;
+            --glow-color: rgba(34, 211, 238, 0.5);
+        }
+
+        /* Cyberpunk Theme */
+        [data-theme="cyber"] {
+            --bg-main: #0a051b;
+            --panel-bg: rgba(23, 15, 45, 0.85);
+            --border-color: #3b1d6e;
+            --accent-color: #f43f5e;
+            --snake-head: #fb7185;
+            --snake-body: #e11d48;
+            --glow-color: rgba(251, 113, 133, 0.6);
+        }
+
+        /* Classic Retro Theme */
+        [data-theme="retro"] {
+            --bg-main: #1a2412;
+            --panel-bg: rgba(35, 48, 24, 0.9);
+            --border-color: #3e562b;
+            --accent-color: #a3e635;
+            --snake-head: #bef264;
+            --snake-body: #65a30d;
+            --glow-color: rgba(190, 242, 100, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            transition: background-color 0.4s ease;
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+        }
+
+        .canvas-glow {
+            box-shadow: 0 0 30px var(--glow-color);
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* Glass D-pad styling */
+        .dpad-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .dpad-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+        .dpad-btn:active {
+            background: var(--accent-color);
+            color: #000;
+            transform: scale(0.92);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 selection:bg-cyan-500 selection:text-black">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-xl flex items-center justify-between glass-panel rounded-2xl px-4 py-3 mb-3 shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl font-bold">
+                <i class="fa-solid fa-staff-snake"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-lg sm:text-xl tracking-wide bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">CYBER SNAKE</h1>
+                <p class="text-xs text-slate-400 font-medium">極光霓虹貪食蛇</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+            <!-- Audio Toggle -->
+            <button id="audioBtn" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 transition" title="靜音/開聲音">
+                <i class="fa-solid fa-volume-high text-sm"></i>
+            </button>
+            <!-- Theme Toggle -->
+            <button id="themeBtn" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 transition" title="切換主題">
+                <i class="fa-solid fa-palette text-sm"></i>
+            </button>
+            <!-- Settings Modal Toggle -->
+            <button id="settingsBtn" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 transition" title="設定">
+                <i class="fa-solid fa-gear text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="w-full max-w-xl flex flex-col items-center flex-grow justify-center">
+        <!-- Score Board -->
+        <div class="w-full grid grid-cols-3 gap-2 sm:gap-4 mb-3">
+            <div class="glass-panel rounded-xl p-2.5 text-center flex flex-col justify-center">
+                <span class="text-[10px] sm:text-xs text-slate-400 font-semibold uppercase tracking-wider">當前分數</span>
+                <span id="scoreVal" class="text-xl sm:text-2xl font-black text-cyan-400 font-arcade mt-0.5">0</span>
+            </div>
+            <div class="glass-panel rounded-xl p-2.5 text-center flex flex-col justify-center">
+                <span class="text-[10px] sm:text-xs text-slate-400 font-semibold uppercase tracking-wider">最高紀錄</span>
+                <span id="highScoreVal" class="text-xl sm:text-2xl font-black text-amber-400 font-arcade mt-0.5">0</span>
+            </div>
+            <div class="glass-panel rounded-xl p-2.5 text-center flex flex-col justify-center">
+                <span class="text-[10px] sm:text-xs text-slate-400 font-semibold uppercase tracking-wider">蛇身長度</span>
+                <span id="lengthVal" class="text-xl sm:text-2xl font-black text-emerald-400 font-arcade mt-0.5">3</span>
+            </div>
         </div>
 
-        <!-- 方向鍵控制項 -->
-        <div class="dpad">
-            <button id="btn-up" class="btn-dir">▲</button>
-            <button id="btn-left" class="btn-dir">◄</button>
-            <button id="btn-right" class="btn-dir">►</button>
-            <button id="btn-down" class="btn-dir">▼</button>
+        <!-- Canvas Wrapper -->
+        <div class="relative w-full aspect-square max-w-[480px] rounded-2xl p-1.5 glass-panel canvas-glow overflow-hidden transition-all duration-300">
+            <canvas id="gameCanvas" class="w-full h-full rounded-xl bg-slate-950 block"></canvas>
+
+            <!-- Overlay Screen: Start Game -->
+            <div id="startOverlay" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-10 transition-opacity duration-300">
+                <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-400 text-3xl mb-4 animate-bounce">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold mb-2 text-white">準備好挑戰了嗎？</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mb-6 max-w-xs">使用方向鍵/WASD控制，或在螢幕上滑動與使用下方虛擬搖桿。</p>
+                <button id="startBtn" class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-xl text-base shadow-lg shadow-cyan-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0 btn-glow">
+                    開始遊戲 <i class="fa-solid fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+
+            <!-- Overlay Screen: Pause Game -->
+            <div id="pauseOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-md flex-col items-center justify-center p-6 text-center z-10">
+                <div class="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 text-3xl mb-4">
+                    <i class="fa-solid fa-pause"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold mb-4 text-white">遊戲暫停中</h2>
+                <button id="resumeBtn" class="px-8 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm shadow-lg shadow-amber-500/20 transition">
+                    繼續遊戲
+                </button>
+            </div>
+
+            <!-- Overlay Screen: Game Over -->
+            <div id="gameOverOverlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md flex-col items-center justify-center p-6 text-center z-10">
+                <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-rose-400 text-3xl mb-3 animate-pulse">
+                    <i class="fa-solid fa-skull"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-rose-400 mb-1">GAME OVER</h2>
+                <p id="gameOverReason" class="text-xs text-slate-400 mb-4">撞到了牆壁！</p>
+                
+                <div class="glass-panel rounded-xl p-4 w-full max-w-xs mb-6 space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">最終得分</span>
+                        <span id="finalScore" class="font-arcade text-cyan-400 text-base">0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">最高紀錄</span>
+                        <span id="finalHighScore" class="font-arcade text-amber-400 text-base">0</span>
+                    </div>
+                </div>
+
+                <button id="restartBtn" class="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-slate-950 font-extrabold rounded-xl text-base shadow-lg shadow-rose-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                    再試一次 <i class="fa-solid fa-rotate-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile D-Pad Virtual Controls & Pause bar -->
+    <footer class="w-full max-w-xl mt-3 flex flex-col items-center">
+        <!-- Quick Control Buttons -->
+        <div class="flex items-center justify-center space-x-3 mb-2">
+            <button id="pauseGameBtn" class="px-4 py-2 rounded-xl glass-panel text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-pause"></i> 暫停 (Space)
+            </button>
+        </div>
+
+        <!-- Directional D-Pad Controls (Visible for Mouse & Touch Users) -->
+        <div class="relative w-44 h-44 my-1">
+            <button id="dpadUp" class="dpad-btn absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-2xl flex items-center justify-center text-xl text-slate-200" title="向上 (W / ↑)">
+                <i class="fa-solid fa-chevron-up"></i>
+            </button>
+            <button id="dpadDown" class="dpad-btn absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-2xl flex items-center justify-center text-xl text-slate-200" title="向下 (S / ↓)">
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <button id="dpadLeft" class="dpad-btn absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl flex items-center justify-center text-xl text-slate-200" title="向左 (A / ←)">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button id="dpadRight" class="dpad-btn absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl flex items-center justify-center text-xl text-slate-200" title="向右 (D / →)">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <!-- Center decorative element -->
+            <div class="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center text-[10px] text-slate-500">
+                <i class="fa-solid fa-arrows-up-down-left-right"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Settings Modal Dialog -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 shadow-2xl relative border border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-cyan-400"></i> 遊戲設定
+                </h3>
+                <button id="closeSettingsBtn" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <!-- Difficulty Selection -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">遊戲難度 (速度)</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button data-speed="140" class="speed-opt px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-medium hover:border-cyan-500 active">簡單</button>
+                        <button data-speed="100" class="speed-opt px-3 py-2 rounded-xl bg-slate-800 border border-cyan-500 text-cyan-400 font-medium">普通</button>
+                        <button data-speed="65" class="speed-opt px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-medium hover:border-cyan-500">困難</button>
+                    </div>
+                </div>
+
+                <!-- Game Grid Size -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">地圖邊界模式</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="borderWallsBtn" class="px-3 py-2 rounded-xl bg-slate-800 border border-cyan-500 text-cyan-400 font-medium">撞牆死亡</button>
+                        <button id="borderPassBtn" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-medium">穿牆模式</button>
+                    </div>
+                </div>
+
+                <!-- Food Legend -->
+                <div class="pt-2 border-t border-slate-800">
+                    <label class="block text-xs font-semibold text-slate-400 mb-2 uppercase">特殊道具說明</label>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> 普通蘋果 (+10分)</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block animate-pulse"></span> 黃金蘋果 (+30分)</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> 縮短藍莓 (-2長度)</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block"></span> 減速冰晶 (降低速度)</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="keyboard-hint">支援鍵盤方向鍵 (↑ ↓ ← →) 或 W A S D 操作</div>
-</div>
+    <script>
+        // Web Audio API Sound Synthesizer (Zero External Dependencies)
+        class AudioController {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
 
-<script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const scoreElement = document.getElementById("score");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const restartBtn = document.getElementById("restartBtn");
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+            }
 
-    // 網格設定
-    const gridSize = 18;
-    const tileCount = canvas.width / gridSize;
+            playEatSound(isSpecial = false) {
+                if (this.muted) return;
+                this.init();
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = isSpecial ? 'triangle' : 'sine';
+                const now = this.ctx.currentTime;
+                
+                if (isSpecial) {
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else {
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                }
+            }
 
-    // 遊戲狀態 Variables
-    let snake = [];
-    let food = { x: 0, y: 0 };
-    let dx = gridSize;
-    let dy = 0;
-    let score = 0;
-    let gameInterval = null;
-    let isGameOver = false;
-    let isPaused = false;
-    let changingDirection = false;
+            playDieSound() {
+                if (this.muted) return;
+                this.init();
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const now = this.ctx.currentTime;
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
+                
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
 
-    // 初始化遊戲
-    function initGame() {
-        snake = [
-            { x: 144, y: 180 },
-            { x: 126, y: 180 },
-            { x: 108, y: 180 }
-        ];
-        score = 0;
-        dx = gridSize;
-        dy = 0;
-        isGameOver = false;
-        isPaused = false;
-        scoreElement.innerText = score;
-        pauseBtn.innerText = "⏸️ 暫停";
-        pauseBtn.style.backgroundColor = "#f39c12";
-        
-        generateFood();
-        
-        if (gameInterval) clearInterval(gameInterval);
-        gameInterval = setInterval(gameLoop, 110);
-    }
-
-    // 主遊戲迴圈
-    function gameLoop() {
-        if (isGameOver || isPaused) return;
-
-        changingDirection = false;
-        clearCanvas();
-        drawFood();
-        moveSnake();
-        drawSnake();
-        checkCollision();
-    }
-
-    // 清除畫布
-    function clearCanvas() {
-        ctx.fillStyle = "#050505";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // 繪製背景微弱網格
-        ctx.strokeStyle = "#111111";
-        ctx.lineWidth = 1;
-        for (let i = 0; i < canvas.width; i += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, canvas.height);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(0, i);
-            ctx.lineTo(canvas.width, i);
-            ctx.stroke();
-        }
-    }
-
-    // 畫出貪食蛇
-    function drawSnake() {
-        snake.forEach((part, index) => {
-            ctx.fillStyle = index === 0 ? "#4CAF50" : "#81C784";
-            ctx.strokeStyle = "#050505";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.roundRect(part.x, part.y, gridSize, gridSize, index === 0 ? 4 : 2);
-            ctx.fill();
-            ctx.stroke();
-        });
-    }
-
-    // 移動貪食蛇
-    function moveSnake() {
-        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-        snake.unshift(head);
-
-        if (head.x === food.x && head.y === food.y) {
-            score += 10;
-            scoreElement.innerText = score;
-            generateFood();
-        } else {
-            snake.pop();
-        }
-    }
-
-    // 隨機生成食物
-    function generateFood() {
-        while (true) {
-            food.x = Math.floor(Math.random() * tileCount) * gridSize;
-            food.y = Math.floor(Math.random() * tileCount) * gridSize;
-
-            let isFoodOnSnake = snake.some(part => part.x === food.x && part.y === food.y);
-            if (!isFoodOnSnake) break;
-        }
-    }
-
-    // 畫出食物
-    function drawFood() {
-        ctx.fillStyle = "#FF5252";
-        ctx.beginPath();
-        ctx.arc(food.x + gridSize / 2, food.y + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // 碰撞偵測
-    function checkCollision() {
-        const head = snake[0];
-
-        const hitLeftWall = head.x < 0;
-        const hitRightWall = head.x >= canvas.width;
-        const hitTopWall = head.y < 0;
-        const hitBottomWall = head.y >= canvas.height;
-
-        let hitSelf = false;
-        for (let i = 1; i < snake.length; i++) {
-            if (head.x === snake[i].x && head.y === snake[i].y) {
-                hitSelf = true;
-                break;
+            playClickSound() {
+                if (this.muted) return;
+                this.init();
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const now = this.ctx.currentTime;
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.05);
             }
         }
 
-        if (hitLeftWall || hitRightWall || hitTopWall || hitBottomWall || hitSelf) {
-            isGameOver = true;
+        const audio = new AudioController();
+
+        // Game Constants & Configuration
+        const GRID_SIZE = 20; // 20x20 Grid
+        const Canvas = document.getElementById('gameCanvas');
+        const ctx = Canvas.getContext('2d');
+
+        // State variables
+        let snake = [];
+        let dir = { x: 1, y: 0 };
+        let nextDir = { x: 1, y: 0 };
+        let food = { x: 0, y: 0, type: 'normal' }; // normal, golden, shrink, slow
+        let particles = [];
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('cyber_snake_highscore') || '0', 10);
+        let gameInterval = null;
+        let speedMs = 100;
+        let isPassThroughWalls = false;
+        let gameState = 'IDLE'; // IDLE, PLAYING, PAUSED, GAMEOVER
+        let currentTheme = 'default';
+
+        // Food types & properties
+        const FOOD_TYPES = [
+            { type: 'normal', color: '#f43f5e', glow: '#fb7185', points: 10, chance: 0.70 },
+            { type: 'golden', color: '#fbbf24', glow: '#fde047', points: 30, chance: 0.85 },
+            { type: 'shrink', color: '#a855f7', glow: '#c084fc', points: 15, chance: 0.93 },
+            { type: 'slow', color: '#22d3ee', glow: '#67e8f9', points: 15, chance: 1.00 }
+        ];
+
+        // Particle System for Food Eaten and Death Effects
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3 + 1;
+                this.vx = (Math.random() - 0.5) * 6;
+                this.vy = (Math.random() - 0.5) * 6;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.03 + 0.02;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createExplosion(cellX, cellY, color, count = 12) {
+            const cellSize = Canvas.width / GRID_SIZE;
+            const px = cellX * cellSize + cellSize / 2;
+            const py = cellY * cellSize + cellSize / 2;
+
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(px, py, color));
+            }
+        }
+
+        // Setup Responsive Canvas Resolution
+        function resizeCanvas() {
+            const container = Canvas.parentElement;
+            const size = container.clientWidth - 12; // Account for glass padding
+            Canvas.width = size;
+            Canvas.height = size;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Food Generation
+        function spawnFood() {
+            let valid = false;
+            let newX, newY;
+
+            while (!valid) {
+                newX = Math.floor(Math.random() * GRID_SIZE);
+                newY = Math.floor(Math.random() * GRID_SIZE);
+                valid = !snake.some(segment => segment.x === newX && segment.y === newY);
+            }
+
+            // Determine food type based on random roll
+            const roll = Math.random();
+            let selectedType = FOOD_TYPES[0];
+            for (let ft of FOOD_TYPES) {
+                if (roll <= ft.chance) {
+                    selectedType = ft;
+                    break;
+                }
+            }
+
+            food = {
+                x: newX,
+                y: newY,
+                ...selectedType
+            };
+        }
+
+        // Main Game Init / Reset
+        function resetGame() {
+            snake = [
+                { x: 5, y: 10 },
+                { x: 4, y: 10 },
+                { x: 3, y: 10 }
+            ];
+            dir = { x: 1, y: 0 };
+            nextDir = { x: 1, y: 0 };
+            score = 0;
+            particles = [];
+            updateScoreUI();
+            spawnFood();
+        }
+
+        function startGame() {
+            audio.playClickSound();
+            resetGame();
+            gameState = 'PLAYING';
+            
+            document.getElementById('startOverlay').classList.add('hidden');
+            document.getElementById('gameOverOverlay').classList.add('hidden');
+            document.getElementById('pauseOverlay').classList.add('hidden');
+
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(gameStep, speedMs);
+        }
+
+        function pauseGame() {
+            if (gameState !== 'PLAYING') return;
+            gameState = 'PAUSED';
             clearInterval(gameInterval);
-            drawGameOver();
-        }
-    }
-
-    // Game Over 畫面
-    function drawGameOver() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = "#FF5252";
-        ctx.font = "bold 28px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 10);
-
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = "14px Arial";
-        ctx.fillText("點擊 [重玩] 重新開始遊戲", canvas.width / 2, canvas.height / 2 + 30);
-    }
-
-    // 暫停畫面
-    function drawPauseOverlay() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = "#f39c12";
-        ctx.font = "bold 28px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("遊戲暫停", canvas.width / 2, canvas.height / 2 + 10);
-    }
-
-    // 控制轉向邏輯
-    function changeDirection(dir) {
-        if (isGameOver || isPaused || changingDirection) return;
-
-        const goingUp = dy === -gridSize;
-        const goingDown = dy === gridSize;
-        const goingRight = dx === gridSize;
-        const goingLeft = dx === -gridSize;
-
-        if (dir === "LEFT" && !goingRight) {
-            dx = -gridSize;
-            dy = 0;
-            changingDirection = true;
-        } else if (dir === "UP" && !goingDown) {
-            dx = 0;
-            dy = -gridSize;
-            changingDirection = true;
-        } else if (dir === "RIGHT" && !goingLeft) {
-            dx = gridSize;
-            dy = 0;
-            changingDirection = true;
-        } else if (dir === "DOWN" && !goingUp) {
-            dx = 0;
-            dy = gridSize;
-            changingDirection = true;
-        }
-    }
-
-    // 暫停 / 繼續 切換
-    function togglePause() {
-        if (isGameOver) return;
-        
-        isPaused = !isPaused;
-        if (isPaused) {
-            pauseBtn.innerText = "▶️ 繼續";
-            pauseBtn.style.backgroundColor = "#27ae60";
-            drawPauseOverlay();
-        } else {
-            pauseBtn.innerText = "⏸️ 暫停";
-            pauseBtn.style.backgroundColor = "#f39c12";
-        }
-    }
-
-    // 綁定鍵盤事件
-    document.addEventListener("keydown", (event) => {
-        const key = event.key;
-
-        if (key === "P" || key === "p" || key === " ") {
-            togglePause();
-            return;
+            document.getElementById('pauseOverlay').classList.remove('hidden');
+            document.getElementById('pauseOverlay').classList.add('flex');
         }
 
-        if (key === "ArrowLeft" || key === "a" || key === "A") changeDirection("LEFT");
-        else if (key === "ArrowUp" || key === "w" || key === "W") changeDirection("UP");
-        else if (key === "ArrowRight" || key === "d" || key === "D") changeDirection("RIGHT");
-        else if (key === "ArrowDown" || key === "s" || key === "S") changeDirection("DOWN");
-    });
+        function resumeGame() {
+            if (gameState !== 'PAUSED') return;
+            audio.playClickSound();
+            gameState = 'PLAYING';
+            document.getElementById('pauseOverlay').classList.add('hidden');
+            document.getElementById('pauseOverlay').classList.remove('flex');
+            gameInterval = setInterval(gameStep, speedMs);
+        }
 
-    // 綁定 UI 按鈕事件
-    document.getElementById("btn-up").addEventListener("click", () => changeDirection("UP"));
-    document.getElementById("btn-left").addEventListener("click", () => changeDirection("LEFT"));
-    document.getElementById("btn-right").addEventListener("click", () => changeDirection("RIGHT"));
-    document.getElementById("btn-down").addEventListener("click", () => changeDirection("DOWN"));
+        function triggerGameOver(reason) {
+            gameState = 'GAMEOVER';
+            clearInterval(gameInterval);
+            audio.playDieSound();
 
-    pauseBtn.addEventListener("click", togglePause);
-    restartBtn.addEventListener("click", initGame);
+            // Head explosion particle effect
+            if (snake.length > 0) {
+                createExplosion(snake[0].x, snake[0].y, '#f43f5e', 25);
+            }
 
-    // 啟動遊戲
-    initGame();
-</script>
+            // Update Highscore
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('cyber_snake_highscore', highScore.toString());
+            }
+
+            document.getElementById('gameOverReason').innerText = reason;
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalHighScore').innerText = highScore;
+            
+            document.getElementById('gameOverOverlay').classList.remove('hidden');
+            document.getElementById('gameOverOverlay').classList.add('flex');
+            updateScoreUI();
+        }
+
+        // Core Step Logic
+        function gameStep() {
+            dir = { ...nextDir };
+            const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+            // Wall Collision Check
+            if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+                if (isPassThroughWalls) {
+                    if (head.x < 0) head.x = GRID_SIZE - 1;
+                    if (head.x >= GRID_SIZE) head.x = 0;
+                    if (head.y < 0) head.y = GRID_SIZE - 1;
+                    if (head.y >= GRID_SIZE) head.y = 0;
+                } else {
+                    triggerGameOver('撞到了牆壁！');
+                    return;
+                }
+            }
+
+            // Self Collision Check
+            if (snake.some(seg => seg.x === head.x && seg.y === head.y)) {
+                triggerGameOver('咬到了自己的尾巴！');
+                return;
+            }
+
+            // Move head
+            snake.unshift(head);
+
+            // Food Collision Check
+            if (head.x === food.x && head.y === food.y) {
+                score += food.points;
+                audio.playEatSound(food.type !== 'normal');
+                createExplosion(food.x, food.y, food.color, 16);
+
+                // Apply Special Food Effects
+                if (food.type === 'shrink' && snake.length > 3) {
+                    snake.pop(); // Double pop shrinks length
+                    snake.pop();
+                } else if (food.type === 'slow') {
+                    // Temporarily slow down then resume
+                    clearInterval(gameInterval);
+                    gameInterval = setInterval(gameStep, speedMs + 40);
+                    setTimeout(() => {
+                        if (gameState === 'PLAYING') {
+                            clearInterval(gameInterval);
+                            gameInterval = setInterval(gameStep, speedMs);
+                        }
+                    }, 4000);
+                }
+
+                updateScoreUI();
+                spawnFood();
+            } else {
+                snake.pop(); // Remove tail if no food eaten
+            }
+
+            render();
+        }
+
+        function updateScoreUI() {
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('highScoreVal').innerText = highScore;
+            document.getElementById('lengthVal').innerText = snake.length;
+        }
+
+        // Render Graphics Engine
+        function render() {
+            const cellSize = Canvas.width / GRID_SIZE;
+
+            // Clear Background
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-main') || '#0b0f19';
+            ctx.fillRect(0, 0, Canvas.width, Canvas.height);
+
+            // Draw Subtle Grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= GRID_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * cellSize, 0);
+                ctx.lineTo(i * cellSize, Canvas.height);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellSize);
+                ctx.lineTo(Canvas.width, i * cellSize);
+                ctx.stroke();
+            }
+
+            // Draw Food
+            const fx = food.x * cellSize + cellSize / 2;
+            const fy = food.y * cellSize + cellSize / 2;
+            const radius = cellSize * 0.4;
+
+            ctx.save();
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = food.glow;
+            ctx.fillStyle = food.color;
+            ctx.beginPath();
+            ctx.arc(fx, fy, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Food Shine Highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(fx - radius * 0.3, fy - radius * 0.3, radius * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // Draw Snake Body
+            const headColor = getComputedStyle(document.documentElement).getPropertyValue('--snake-head').trim() || '#22d3ee';
+            const bodyColor = getComputedStyle(document.documentElement).getPropertyValue('--snake-body').trim() || '#0891b2';
+
+            snake.forEach((segment, index) => {
+                const sx = segment.x * cellSize;
+                const sy = segment.y * cellSize;
+                const padding = 1.5;
+
+                ctx.save();
+                if (index === 0) {
+                    // Head
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = headColor;
+                    ctx.fillStyle = headColor;
+                    
+                    // Rounded Head Rectangle
+                    const r = 6;
+                    ctx.beginPath();
+                    ctx.roundRect(sx + padding, sy + padding, cellSize - padding * 2, cellSize - padding * 2, r);
+                    ctx.fill();
+
+                    // Eyes based on direction
+                    ctx.fillStyle = '#000';
+                    const eyeRadius = 2.5;
+                    let eye1 = { x: 0, y: 0 }, eye2 = { x: 0, y: 0 };
+
+                    if (dir.x === 1) { // Right
+                        eye1 = { x: sx + cellSize - 6, y: sy + 6 };
+                        eye2 = { x: sx + cellSize - 6, y: sy + cellSize - 6 };
+                    } else if (dir.x === -1) { // Left
+                        eye1 = { x: sx + 6, y: sy + 6 };
+                        eye2 = { x: sx + 6, y: sy + cellSize - 6 };
+                    } else if (dir.y === -1) { // Up
+                        eye1 = { x: sx + 6, y: sy + 6 };
+                        eye2 = { x: sx + cellSize - 6, y: sy + 6 };
+                    } else { // Down
+                        eye1 = { x: sx + 6, y: sy + cellSize - 6 };
+                        eye2 = { x: sx + cellSize - 6, y: sy + cellSize - 6 };
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(eye1.x, eye1.y, eyeRadius, 0, Math.PI * 2);
+                    ctx.arc(eye2.x, eye2.y, eyeRadius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else {
+                    // Body segments fade slightly towards tail
+                    const alpha = 1 - (index / snake.length) * 0.4;
+                    ctx.fillStyle = bodyColor;
+                    ctx.globalAlpha = alpha;
+                    
+                    ctx.beginPath();
+                    ctx.roundRect(sx + padding, sy + padding, cellSize - padding * 2, cellSize - padding * 2, 4);
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+
+            // Update & Render Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw(ctx);
+                if (particles[i].alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // Controls & Key bindings
+        function changeDirection(dx, dy) {
+            // Prevent 180-degree immediate reverse turns
+            if (dx !== 0 && dir.x === -dx) return;
+            if (dy !== 0 && dir.y === -dy) return;
+            nextDir = { x: dx, y: dy };
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault(); // Prevent page scroll
+            }
+
+            if (gameState !== 'PLAYING' && e.key === ' ') {
+                if (gameState === 'PAUSED') resumeGame();
+                return;
+            }
+
+            switch (e.key) {
+                case 'ArrowUp': case 'w': case 'W':
+                    changeDirection(0, -1); break;
+                case 'ArrowDown': case 's': case 'S':
+                    changeDirection(0, 1); break;
+                case 'ArrowLeft': case 'a': case 'A':
+                    changeDirection(-1, 0); break;
+                case 'ArrowRight': case 'd': case 'D':
+                    changeDirection(1, 0); break;
+            }
+        });
+
+        // Virtual D-Pad Touch & Mouse Listeners
+        const bindDpadBtn = (id, dx, dy) => {
+            const btn = document.getElementById(id);
+            const handler = (e) => {
+                e.preventDefault();
+                changeDirection(dx, dy);
+            };
+            btn.addEventListener('pointerdown', handler);
+            btn.addEventListener('click', handler);
+        };
+
+        bindDpadBtn('dpadUp', 0, -1);
+        bindDpadBtn('dpadDown', 0, 1);
+        bindDpadBtn('dpadLeft', -1, 0);
+        bindDpadBtn('dpadRight', 1, 0);
+
+        // Touch Swipe Gestures Handling on Canvas
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        Canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        Canvas.addEventListener('touchend', (e) => {
+            if (!touchStartX || !touchStartY) return;
+
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            // Ensure minimum swipe threshold
+            if (Math.max(Math.abs(diffX), Math.abs(diffY)) > 20) {
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    // Horizontal swipe
+                    changeDirection(diffX > 0 ? 1 : -1, 0);
+                } else {
+                    // Vertical swipe
+                    changeDirection(0, diffY > 0 ? 1 : -1);
+                }
+            }
+
+            touchStartX = 0;
+            touchStartY = 0;
+        }, { passive: true });
+
+        // UI Button Event Handlers
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+        document.getElementById('resumeBtn').addEventListener('click', resumeGame);
+        document.getElementById('pauseGameBtn').addEventListener('click', () => {
+            if (gameState === 'PLAYING') pauseGame();
+            else if (gameState === 'PAUSED') resumeGame();
+        });
+
+        // Audio Toggle
+        const audioBtn = document.getElementById('audioBtn');
+        audioBtn.addEventListener('click', () => {
+            audio.muted = !audio.muted;
+            audioBtn.innerHTML = audio.muted 
+                ? '<i class="fa-solid fa-volume-xmark text-rose-400 text-sm"></i>' 
+                : '<i class="fa-solid fa-volume-high text-sm"></i>';
+        });
+
+        // Theme Switcher Logic
+        const themes = ['default', 'cyber', 'retro'];
+        let themeIdx = 0;
+        document.getElementById('themeBtn').addEventListener('click', () => {
+            themeIdx = (themeIdx + 1) % themes.length;
+            const t = themes[themeIdx];
+            document.documentElement.setAttribute('data-theme', t);
+            audio.playClickSound();
+            render();
+        });
+
+        // Settings Modal Handlers
+        const settingsModal = document.getElementById('settingsModal');
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            audio.playClickSound();
+            settingsModal.classList.remove('hidden');
+        });
+        document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+
+        // Speed Selection in Settings
+        document.querySelectorAll('.speed-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.speed-opt').forEach(b => {
+                    b.classList.remove('border-cyan-500', 'text-cyan-400');
+                    b.classList.add('border-slate-700', 'text-slate-300');
+                });
+                btn.classList.add('border-cyan-500', 'text-cyan-400');
+                speedMs = parseInt(btn.dataset.speed, 10);
+                if (gameState === 'PLAYING') {
+                    clearInterval(gameInterval);
+                    gameInterval = setInterval(gameStep, speedMs);
+                }
+            });
+        });
+
+        // Pass through border mode
+        const borderWallsBtn = document.getElementById('borderWallsBtn');
+        const borderPassBtn = document.getElementById('borderPassBtn');
+
+        borderWallsBtn.addEventListener('click', () => {
+            isPassThroughWalls = false;
+            borderWallsBtn.className = "px-3 py-2 rounded-xl bg-slate-800 border border-cyan-500 text-cyan-400 font-medium";
+            borderPassBtn.className = "px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-medium";
+        });
+
+        borderPassBtn.addEventListener('click', () => {
+            isPassThroughWalls = true;
+            borderPassBtn.className = "px-3 py-2 rounded-xl bg-slate-800 border border-cyan-500 text-cyan-400 font-medium";
+            borderWallsBtn.className = "px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-medium";
+        });
+
+        // Initialize display on load
+        updateScoreUI();
+        resetGame();
+        render();
+    </script>
+</body>
+</html>
